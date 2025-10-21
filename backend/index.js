@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
   res.send("Servidor funcionando!");
 });
 
-const usersRoutes = require("./UsersCR/usersRoutes");
+const usersRoutes = require("./UsersCR/UsersRoutes");
 app.use("/users", usersRoutes);
 
 app.listen(PORT, () => {
