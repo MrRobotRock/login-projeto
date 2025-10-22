@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import "./Register.css";
 
 function App() {
   const [formData, setFormData] = useState({
@@ -7,75 +8,83 @@ function App() {
     usuario: "",
     email: "",
     senha: "",
-    confirmarSenha: "",
   });
 
   const handleChange = (e) => {
-    setFormData({...formData, [e.target.name]: e.target.value});
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(formData.senha !== formData.confirmarSenha){
-      alert("As senhas não conferem!");
-      return;
-    }
-    alert("Cadastro realizado!");
-    console.log(formData);
+    console.log("Dados de cadastro:", formData);
   };
 
   return (
-    <div className="container">
-      <div className="card">
-        <h2 className="title">Registrar</h2>
-        <p className="subtitle">Crie sua conta</p>
-        <form onSubmit={handleSubmit}>
-          <input 
-            type="text" 
-            name="nome" 
-            placeholder="Nome" 
-            value={formData.nome} 
-            onChange={handleChange} 
+    <div className="register-container">
+      <form className="register-card" onSubmit={handleSubmit}>
+        <h2>Crie sua conta</h2>
+        <p>Preencha os campos abaixo para se registrar</p>
+
+        <div className="input-group">
+          <label htmlFor="nome">Nome</label>
+          <input
+            type="text"
+            id="nome"
+            name="nome"
+            placeholder="Seu nome completo"
+            value={formData.nome}
+            onChange={handleChange}
             required
           />
-          <input 
-            type="text" 
-            name="usuario" 
-            placeholder="Usuário" 
-            value={formData.usuario} 
-            onChange={handleChange} 
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="usuario">Usuário</label>
+          <input
+            type="text"
+            id="usuario"
+            name="usuario"
+            placeholder="seuusuario"
+            value={formData.usuario}
+            onChange={handleChange}
             required
           />
-          <input 
-            type="email" 
-            name="email" 
-            placeholder="Email" 
-            value={formData.email} 
-            onChange={handleChange} 
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="seu@email.com"
+            value={formData.email}
+            onChange={handleChange}
             required
           />
-          <input 
-            type="password" 
-            name="senha" 
-            placeholder="Senha" 
-            value={formData.senha} 
-            onChange={handleChange} 
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="senha">Senha</label>
+          <input
+            type="password"
+            id="senha"
+            name="senha"
+            placeholder="********"
+            value={formData.senha}
+            onChange={handleChange}
             required
           />
-          <input 
-            type="password" 
-            name="confirmarSenha" 
-            placeholder="Confirmar Senha" 
-            value={formData.confirmarSenha} 
-            onChange={handleChange} 
-            required
-          />
-          <button type="submit">Registrar</button>
-        </form>
-        <p className="footer-text">
-          Já tem conta? <a href="#">Entrar</a>
+        </div>
+
+        <button type="submit" className="btn-register">
+          Cadastrar
+        </button>
+
+        <p className="redirect-text">
+          Já tem uma conta? <a href="/login">Entrar</a>
         </p>
-      </div>
+      </form>
     </div>
   );
 }

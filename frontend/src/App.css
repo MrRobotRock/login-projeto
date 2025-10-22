@@ -4,6 +4,28 @@
   padding: 2rem;
   text-align: center;
 }
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; 
+  background: #E65729; 
+  padding: 2rem;
+}
+
+.card {
+  padding: 2em;
+  background-color: var(--cor-fundo-card);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.title {
+  color: #000000ff;
+  margin-bottom: 0.5rem;
+}
 
 .logo {
   height: 6em;
