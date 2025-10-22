@@ -11,6 +11,9 @@ app.get("/", (req, res) => {
   res.send("Servidor funcionando!");
 });
 
+const authRoutes = require("./authCR/authRoutes");
+app.use("/auth", authRoutes);
+
 const usersRoutes = require("./UsersCR/UsersRoutes");
 app.use("/users", usersRoutes);
 

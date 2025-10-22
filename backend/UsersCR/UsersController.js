@@ -9,7 +9,7 @@ exports.getUsers = async (req, res) => {
     const users = await prisma.user.findMany();
     res.json(users);
   } catch (error) {
-    console.error("Erro ao buscar usuários:", error); 
+    console.error("Erro ao buscar usuários:", error);
     res.status(500).json({ error: "Erro ao buscar usuários." });
   }
 };
@@ -61,7 +61,7 @@ exports.deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
     await prisma.user.delete({ where: { id: id } });
-    res.status(200).json({ mensagem: "User deletado com sucesso" });
+    res.status(200).json({ mensagem: `User ${id} deletado com sucesso` });
   } catch (error) {
     console.error("Erro ao deletar usuário:", error);
     res.status(500).json({ error: "Erro ao deletar usuário." });
