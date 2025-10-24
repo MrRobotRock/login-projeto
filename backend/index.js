@@ -3,7 +3,7 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // <-- novo import
-
+const cors = require("cors");
 const prisma = new PrismaClient();
 const app = express();
 const PORT = 3000;
@@ -12,6 +12,7 @@ const PORT = 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'chave-super-secreta';
 
 app.use(express.json());
+app.use(cors());
 
 // --- PARTE 2: ROTAS DA API ---
 
@@ -60,6 +61,13 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: 'Erro interno no servidor.' });
   }
 });
+
+
+const authRoutes = require("./authCR/authRoutes");
+app.use("/auth", authRoutes);
+
+const usersRoutes = require("./UsersCR/UsersRoutes");
+app.use("/users", usersRoutes);
 
 // --- PARTE 3: INÍCIO DO SERVIDOR ---
 app.listen(PORT, () => {
