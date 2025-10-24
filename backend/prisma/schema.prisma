@@ -12,7 +12,7 @@ model User {
   nome       String
   usuario    String   @unique
   email      String   @unique
-  senha      String  
+  senha      String
   criadoEm   DateTime @default(now()) @map("criado_em")
   alteradoEm DateTime @updatedAt @map("alterado_em")
 

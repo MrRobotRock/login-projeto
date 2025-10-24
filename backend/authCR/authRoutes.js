@@ -3,12 +3,15 @@ const router = express.Router();
 const authController = require("./authController");
 
 //ROTA 1: Página de se cadastrar no sistema
-router.post("/register", authController.register);
+router.post("/api/register", authController.register);
 
 //ROTA 2: Página de login
-router.post("/login", authController.login);
+router.post("/api/login", authController.login);
 
-//ROTA 3: Página que permite mudar senha
-router.post("/forgot-password", authController.forgotPassword);
+//ROTA 3: Listar todos os usuários
+router.get("/api/perfil", authController.perfil);
+
+//ROTA 4: Página que permite mudar senha
+router.post("/api/forgot-password", authController.forgotPassword);
 
 module.exports = router;
