@@ -7,7 +7,7 @@
 
 # Prisma
 /generated
-/prisma/generated
+/generated/prisma
 /node_modules/.prisma
 
 # Variáveis de ambiente
@@ -18,4 +18,3 @@
 
 # IDE
 .vscode
-/generated/prisma
