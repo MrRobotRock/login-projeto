@@ -1,38 +1,41 @@
-import { useState } from 'react';
-import { User, Lock, Eye, EyeOff } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './Login.css';
+import { useState } from "react";
+import { User, Lock, Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    identificador: '', //aceita email ou nome de usuário
-    senha: ''
+    identificador: "", //aceita email ou nome de usuário
+    senha: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/login', formData);
-      console.log('Login bem-sucedido:', response.data);
+      const response = await axios.post(
+        "http://localhost:3000/api/login",
+        formData
+      );
+      console.log("Login bem-sucedido:", response.data);
       // Redireciona para o menu após login
-      navigate('/menu');
+      navigate("/menu");
     } catch (err) {
-      setError(err.response?.data?.message || 'Erro ao fazer login');
+      setError(err.response?.data?.message || "Erro ao fazer login");
     } finally {
       setLoading(false);
     }
@@ -59,7 +62,7 @@ export default function Login() {
                 name="identificador"
                 value={formData.identificador}
                 onChange={handleChange}
-                placeholder="Digite seu e-mail ou usuário" 
+                placeholder="Digite seu e-mail ou usuário"
                 required
               />
             </div>
@@ -70,7 +73,7 @@ export default function Login() {
             <div className="input-wrapper">
               <Lock className="input-icon" size={20} />
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 id="senha"
                 name="senha"
                 value={formData.senha}
@@ -92,26 +95,25 @@ export default function Login() {
               <input type="checkbox" />
               <span>Lembrar de mim</span>
             </label>
-            <a href="#" className="forgot-password">
+            <a href="/redefinirsenha" className="forgot-password">
               Esqueceu a senha?
             </a>
           </div>
 
           {/*Aqui fica o estado de carregamento*/}
           <button type="submit" className="submit-button" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
+            {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
-
         {/* Link para cadastro */}
         <p className="register-link">
-          Não tem uma conta?{' '}
+          Não tem uma conta?{" "}
           <a
-            href="#"
+            href="/registro"
             onClick={(e) => {
               e.preventDefault();
-              navigate('/registro');
+              navigate("/registro");
             }}
           >
             Cadastre-se
