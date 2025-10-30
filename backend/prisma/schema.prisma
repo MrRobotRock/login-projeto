@@ -46,3 +46,4 @@ model UserRole {
   @@unique([userId, roleId])
   @@map("usuarioxrole")
 }
+

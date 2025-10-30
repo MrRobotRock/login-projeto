@@ -9,7 +9,7 @@ router.post("/api/register", authController.register);
 router.post("/api/login", authController.login);
 
 //ROTA 3: Listar todos os usuários
-router.get("/api/perfil", authController.perfil);
+//router.get("/api/perfil", authController.perfil); Não está no authController.js
 
 //ROTA 4: Página que permite mudar senha
 router.post("/api/forgot-password", authController.forgotPassword);
