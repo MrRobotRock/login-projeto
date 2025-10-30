@@ -6,8 +6,17 @@ const jwt = require("jsonwebtoken"); // <-- novo import
 const cors = require("cors");
 const prisma = new PrismaClient();
 const app = express();
+<<<<<<< HEAD
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
+const cors = require('cors');
+
+const PORT = 3000;
+const prisma = new PrismaClient();
+=======
 const PORT = 3000;
 const dotenv = require("dotenv");
+>>>>>>> main
 
 // Chave secreta para o JWT (ideal: usar variável de ambiente)
 const JWT_SECRET = process.env.JWT_SECRET || "chave-super-secreta";
@@ -22,6 +31,56 @@ app.get("/", (req, res) => {
   res.send("Servidor funcionando!");
 });
 
+<<<<<<< HEAD
+// ISSO AQUI É A ROTA DO REGISTRO
+app.post('/api/register', async (req, res) => {
+  const { nome, usuario, email, senha } = req.body;
+
+  try {
+    if (!nome || !usuario || !email || !senha) {
+      return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+    }
+
+    const emailExiste = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (emailExiste) {
+      return res.status(409).json({ error: 'Este email já está em uso' });
+    }
+
+    const usuarioExiste = await prisma.user.findUnique({
+      where: { usuario },
+    });
+
+    if (usuarioExiste) {
+      return res.status(409).json({ error: 'Este nome de usuário já está em uso' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const senhaHash = await bcrypt.hash(senha, salt);
+
+    const novoUsuario = await prisma.user.create({
+      data: {
+        nome,
+        usuario,
+        email,
+        senha: senhaHash,
+      },
+    });
+
+    res.status(201).json({
+      message: 'Usuário criado com sucesso!',
+      userId: novoUsuario.id,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro interno ao criar o usuário' });
+  }
+});
+
+=======
 app.post("/api/login", async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -70,6 +129,7 @@ const usersRoutes = require("./UsersCR/UsersRoutes");
 app.use("/users", usersRoutes);
 
 // --- PARTE 3: INÍCIO DO SERVIDOR ---
+>>>>>>> main
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

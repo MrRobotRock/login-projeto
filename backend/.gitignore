@@ -6,6 +6,7 @@
 /build
 
 # Prisma
+.prisma/cache
 /generated
 /prisma/generated
 /node_modules/.prisma
