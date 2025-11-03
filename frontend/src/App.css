@@ -5,35 +5,42 @@
 }
 
 :root {
-   --cor-fundo-principal: #C70039; 
-    --cor-fundo-secundario: #FF5733;
-    --cor-gradiente-fundo: linear-gradient(135deg, var(--cor-fundo-principal) 0%, var(--cor-fundo-secundario) 100%);
-    --cor-fundo-card: #FFFFFF;        
-    --cor-destaque: #FFC300;        
-    --cor-destaque-hover: #E8B400;  
-    --cor-destaque-foco-sombra: rgba(255, 195, 0, 0.4); 
+  --cor-gradiente-fundo: linear-gradient(135deg, #e4f0e1 0%, #a3c69d 100%);
 
-    --cor-texto-principal: #1A202C;  
-    --cor-texto-secundario: #4A5568;  
-    --cor-label: #374151;            
-    --cor-link: var(--cor-fundo-principal);
-    
-    --cor-borda-input: #E5E7EB;      
-    --cor-icones: #9CA3AF;           
-    --cor-erro-fundo: #FFF2F2;        
-    --cor-erro-borda: #FDC6C6;        
-    --cor-erro-texto: #CC3333;        
+  /* Card e campos */
+  --cor-fundo-card: #f7fdf4;
+  --cor-borda-input: #c8e6c9;
+
+  /* Botão principal */
+  --cor-destaque: #4caf50; /* Botão "Entrar" e CTA */
+  --cor-destaque-hover: #388e3c; /* Sombra no hover ou variação leve */
+  --cor-destaque-foco-sombra: rgba(76, 175, 80, 0.18);
+
+  /* Texto */
+  --cor-texto-principal: #2e4f2c; /* Titulos e textos importantes */
+  --cor-texto-secundario: #4a5568; /* Textos menos importantes */
+  --cor-label: #2e4f2c; /* Labels dos inputs */
+  --cor-link: #2e4f2c; /* Links, como "Cadastre-se" */
+
+  /* Ícones e elementos de UI */
+  --cor-icones: #a3c69d;
+
+  /* Erros e Feedback */
+  --cor-erro-fundo: #fef2f2;
+  --cor-erro-borda: #fecaca;
+  --cor-erro-texto: #dc2626;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

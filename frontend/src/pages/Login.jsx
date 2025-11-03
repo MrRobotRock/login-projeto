@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { User, Lock, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+// import authService from "../services/authService";
 import "./Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    identificador: "", //aceita email ou nome de usuário
+    email: "",
     senha: "",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -27,15 +27,13 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/login",
-        formData
-      );
-      console.log("Login bem-sucedido:", response.data);
-      // Redireciona para o menu após login
+      await authService.login(formData.email, formData.senha);
+      console.log("Login bem-sucedido!");
       navigate("/menu");
     } catch (err) {
-      setError(err.response?.data?.message || "Erro ao fazer login");
+      setError(
+        err.message || "Erro ao fazer login. Verifique suas credenciais."
+      );
     } finally {
       setLoading(false);
     }
@@ -46,23 +44,23 @@ export default function Login() {
       <div className="login-card">
         <div className="login-header">
           <h1>Bem-vindo</h1>
-          <p>Entre com seu e-mail ou nome de usuário</p>
+          <p>Entre com seu e-mail</p>
         </div>
 
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="identificador">E-mail ou Usuário</label>
+            <label htmlFor="email">E-mail</label>
             <div className="input-wrapper">
               <User className="input-icon" size={20} />
               <input
-                type="text"
-                id="identificador"
-                name="identificador"
-                value={formData.identificador}
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="Digite seu e-mail ou usuário"
+                placeholder="seu@email.com"
                 required
               />
             </div>
@@ -95,22 +93,20 @@ export default function Login() {
               <input type="checkbox" />
               <span>Lembrar de mim</span>
             </label>
-            <a href="/redefinirsenha" className="forgot-password">
+            <a href="#" className="forgot-password">
               Esqueceu a senha?
             </a>
           </div>
 
-          {/*Aqui fica o estado de carregamento*/}
           <button type="submit" className="submit-button" disabled={loading}>
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
-        {/* Link para cadastro */}
         <p className="register-link">
           Não tem uma conta?{" "}
           <a
-            href="/registro"
+            href="#"
             onClick={(e) => {
               e.preventDefault();
               navigate("/registro");
