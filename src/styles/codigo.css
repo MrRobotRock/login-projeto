@@ -1,0 +1,72 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom, #E4F0E1, #A3C69D);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.codigo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.codigo-card {
+  background-color: #F7FDF4;
+  border-radius: 16px;
+  padding: 40px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.codigo-card h2 {
+  color: #2E4F2C;
+  margin-bottom: 10px;
+}
+
+.codigo-card p {
+  color: #2E4F2C;
+  margin-bottom: 20px;
+}
+
+.codigo-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #C8E6C9;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.codigo-input:focus {
+  border-color: #4CAF50;
+}
+
+.erro {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.botao-confirmar {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.botao-confirmar:hover {
+  background-color: #3e8e41;
+}
