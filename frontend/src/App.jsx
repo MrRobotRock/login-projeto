@@ -4,7 +4,9 @@ import Registro from './pages/Registro';
 import Menu from './pages/Menu'; 
 import ProtectedRoute from './components/ProtectedRoute';
 import authService from './services/authService';
+import RecuperarSenha from './pages/RecuperarSenha';
 import './App.css';
+import CodigoVerificacao from './pages/CodigoVerificacao';
 
 function App() {
   return (
@@ -44,6 +46,9 @@ function App() {
           }
         />
         <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+        <Route path="/codigo-verificacao" element={<CodigoVerificacao />} />
+        <Route path="/verificar-codigo" element={<CodigoVerificacao />} />
       </Routes>
     </Router>
   );
