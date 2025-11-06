@@ -1,4 +1,8 @@
+//4ca88861388a21375c08e5594ad702b20efd0a31e3d3297f067077c8325e5b50
 // --- PARTE 1: CONFIGURAÇÃO INICIAL ---
+const dotenv = require("dotenv");
+dotenv.config();
+
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
@@ -6,22 +10,17 @@ const jwt = require("jsonwebtoken"); // <-- novo import
 const cors = require("cors");
 const prisma = new PrismaClient();
 const app = express();
-<<<<<<< HEAD
+
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
-
 const PORT = 3000;
 const prisma = new PrismaClient();
-=======
-const PORT = 3000;
 const dotenv = require("dotenv");
->>>>>>> main
 
 // Chave secreta para o JWT (ideal: usar variável de ambiente)
-const JWT_SECRET = process.env.JWT_SECRET || "chave-super-secreta";
+const JWT_SECRET = process.env.JWT_SECRET || "4ca88861388a21375c08e5594ad702b20efd0a31e3d3297f067077c8325e5b50";
 
-dotenv.config();
 app.use(express.json());
 app.use(cors());
 
@@ -31,10 +30,10 @@ app.get("/", (req, res) => {
   res.send("Servidor funcionando!");
 });
 
-<<<<<<< HEAD
 // ISSO AQUI É A ROTA DO REGISTRO
 app.post('/api/register', async (req, res) => {
   const { nome, usuario, email, senha } = req.body;
+
 
   try {
     if (!nome || !usuario || !email || !senha) {
@@ -80,7 +79,6 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-=======
 app.post("/api/login", async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -122,6 +120,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+
 const authRoutes = require("./authCR/authRoutes");
 app.use("/auth", authRoutes);
 
@@ -129,7 +128,6 @@ const usersRoutes = require("./UsersCR/UsersRoutes");
 app.use("/users", usersRoutes);
 
 // --- PARTE 3: INÍCIO DO SERVIDOR ---
->>>>>>> main
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

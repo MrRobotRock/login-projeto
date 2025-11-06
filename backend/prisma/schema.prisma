@@ -13,21 +13,23 @@ model User {
   usuario    String   @unique
   email      String   @unique
   senha      String
+  status     Boolean  @default(true)
   criadoEm   DateTime @default(now()) @map("criado_em")
   alteradoEm DateTime @updatedAt @map("alterado_em")
-
-  userRoles UserRole[]
-
+  
+  userRoles      UserRole[]
+  passwordResets PasswordReset[]
+  
   @@index([email])
   @@index([usuario])
+  @@index([status])
   @@map("usuarios")
 }
-<<<<<<< HEAD
 
 model Role {
   id   Int    @id @default(autoincrement())
-  nome String @unique
-
+  nome String @unique  
+  userRoles UserRole[]  
   userRoles UserRole[]
 
   @@map("roles")
@@ -35,17 +37,32 @@ model Role {
 
 model UserRole {
   id Int @id @default(autoincrement())
-
-  user   User   @relation(fields: [userId], references: [id])
+  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
-
-  role   Role @relation(fields: [roleId], references: [id])
+  
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId Int
-
+  
   criadoEm DateTime @default(now()) @map("criado_em")
-
+  
   @@unique([userId, roleId])
   @@map("usuarioxrole")
 }
-=======
->>>>>>> main
+
+model PasswordReset {
+  id              String   @id @default(cuid())
+  email           String
+  senhaAleatoria  String   @map("senha_aleatoria")
+  dataExpiracao   DateTime @map("data_expiracao")
+  utilizado       Boolean  @default(false)
+  criadoEm        DateTime @default(now()) @map("criado_em")
+  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @map("user_id")
+  
+  @@index([email])
+  @@index([senhaAleatoria])
+  @@index([dataExpiracao])
+  @@map("recuperacao_senha")
+}

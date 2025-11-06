@@ -4,26 +4,35 @@
   box-sizing: border-box;
 }
 
-:root {
-   --cor-fundo-principal: #C70039; 
-    --cor-fundo-secundario: #FF5733;
-    --cor-gradiente-fundo: linear-gradient(135deg, var(--cor-fundo-principal) 0%, var(--cor-fundo-secundario) 100%);
-    --cor-fundo-card: #FFFFFF;        
-    --cor-destaque: #FFC300;        
-    --cor-destaque-hover: #E8B400;  
-    --cor-destaque-foco-sombra: rgba(255, 195, 0, 0.4); 
 
-    --cor-texto-principal: #1A202C;  
-    --cor-texto-secundario: #4A5568;  
-    --cor-label: #374151;            
-    --cor-link: var(--cor-fundo-principal);
+:root {
+    --cor-gradiente-fundo: linear-gradient(135deg, #E4F0E1 0%, #A3C69D 100%);
     
-    --cor-borda-input: #E5E7EB;      
-    --cor-icones: #9CA3AF;           
-    --cor-erro-fundo: #FFF2F2;        
-    --cor-erro-borda: #FDC6C6;        
-    --cor-erro-texto: #CC3333;        
+    /* Card e campos */
+    --cor-fundo-card: #F7FDF4;
+    --cor-borda-input: #C8E6C9;
+
+    /* Botão principal */
+    --cor-destaque: #4CAF50; /* Botão "Entrar" e CTA */
+    --cor-destaque-hover: #388E3C; /* Sombra no hover ou variação leve */
+    --cor-destaque-foco-sombra: rgba(76, 175, 80, 0.18);
+
+    /* Texto */
+    --cor-texto-principal: #2E4F2C; /* Titulos e textos importantes */
+    --cor-texto-secundario: #4A5568; /* Textos menos importantes */
+    --cor-label: #2E4F2C; /* Labels dos inputs */
+    --cor-link: #2E4F2C; /* Links, como "Cadastre-se" */
+
+    /* Ícones e elementos de UI */
+    --cor-icones: #A3C69D;
+
+    /* Erros e Feedback */
+    --cor-erro-fundo: #FEF2F2;
+    --cor-erro-borda: #FECACA;
+    --cor-erro-texto: #DC2626;
 }
+
+
 
 html, body {
   width: 100%;
