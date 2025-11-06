@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require("./authController");
 const authMiddleware = require("./authMiddleware");
 
+
 //ROTA 1: Página de se cadastrar no sistema
 router.post("/api/register", authController.register);
 

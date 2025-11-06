@@ -10,12 +10,17 @@ const jwt = require("jsonwebtoken"); // <-- novo import
 const cors = require("cors");
 const prisma = new PrismaClient();
 const app = express();
+
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
+const cors = require('cors');
 const PORT = 3000;
+const prisma = new PrismaClient();
+const dotenv = require("dotenv");
 
 // Chave secreta para o JWT (ideal: usar variável de ambiente)
 const JWT_SECRET = process.env.JWT_SECRET || "4ca88861388a21375c08e5594ad702b20efd0a31e3d3297f067077c8325e5b50";
 
-dotenv.config();
 app.use(express.json());
 app.use(cors());
 
@@ -29,7 +34,8 @@ app.get("/", (req, res) => {
 app.post('/api/register', async (req, res) => {
   const { nome, usuario, email, senha } = req.body;
 
-  try { 
+
+  try {
     if (!nome || !usuario || !email || !senha) {
       return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
@@ -73,8 +79,6 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-
-//ROTA DE LOGIN
 app.post("/api/login", async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -115,6 +119,10 @@ app.post("/api/login", async (req, res) => {
     res.status(500).json({ error: "Erro interno no servidor." });
   }
 });
+
+
+const authRoutes = require("./authCR/authRoutes");
+app.use("/auth", authRoutes);
 
 const usersRoutes = require("./UsersCR/UsersRoutes");
 app.use("/users", usersRoutes);

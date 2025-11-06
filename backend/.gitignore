@@ -1,3 +1,22 @@
+# Dependências
+/node_modules
+
+# Build
+/dist
+/build
+
+# Prisma
+.prisma/cache
+/generated
+/prisma/generated
+/node_modules/.prisma
+
+# Variáveis de ambiente
 .env
-node_modules
+
+# Logs
+*.log
+
+# IDE
+.vscode
 /generated/prisma
