@@ -1,41 +1,53 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Registro from './pages/Registro';
-import Menu from './pages/Menu'; 
-import ProtectedRoute from './components/ProtectedRoute';
-import authService from './services/authService';
-import RecuperarSenha from './pages/RecuperarSenha';
-import './App.css';
-import CodigoVerificacao from './pages/CodigoVerificacao';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Login from "./pages/Login";
+import Registro from "./pages/Registro";
+import Menu from "./pages/Menu";
+import ProtectedRoute from "./components/ProtectedRoute";
+import authService from "./services/authService";
+import RecuperarSenha from "./pages/RecuperarSenha";
+import "./App.css";
+import CodigoVerificacao from "./pages/CodigoVerificacao";
+import RedefinirSenha from "./pages/RedefinirSenha/RedefinirSenha";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
-            authService.isAuthenticated() ? 
-              <Navigate to="/menu" replace /> : 
+            authService.isAuthenticated() ? (
+              <Navigate to="/menu" replace />
+            ) : (
               <Navigate to="/login" replace />
-          } 
+            )
+          }
         />
 
-        <Route 
-          path="/login" 
+        <Route
+          path="/login"
           element={
-            authService.isAuthenticated() ? 
-              <Navigate to="/menu" replace /> : 
+            authService.isAuthenticated() ? (
+              <Navigate to="/menu" replace />
+            ) : (
               <Login />
-          } 
+            )
+          }
         />
-        <Route 
-          path="/registro" 
+        <Route
+          path="/registro"
           element={
-            authService.isAuthenticated() ? 
-              <Navigate to="/menu" replace /> : 
+            authService.isAuthenticated() ? (
+              <Navigate to="/menu" replace />
+            ) : (
               <Registro />
-          } 
+            )
+          }
         />
         <Route
           path="/menu"
@@ -49,6 +61,7 @@ function App() {
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         <Route path="/codigo-verificacao" element={<CodigoVerificacao />} />
         <Route path="/verificar-codigo" element={<CodigoVerificacao />} />
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
       </Routes>
     </Router>
   );
