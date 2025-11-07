@@ -1,12 +1,10 @@
 // src/pages/Menu.jsx
 
-import { useNavigate } from 'react-router-dom';
-import { LogOut, User, Settings, Home } from 'lucide-react';
-import authService from '../services/authService';
-import './Menu.css';
+import { LogOut, User, Settings, Home } from "lucide-react";
+import authService from "../services/authService";
+import "./Menu.css";
 
 export default function Menu() {
-  const navigate = useNavigate();
   const user = authService.getCurrentUser();
 
   const handleLogout = () => {
@@ -16,7 +14,7 @@ export default function Menu() {
   return (
     <div className="menu-container">
       <div className="menu-header">
-        <h1>Bem-vindo, {user?.nome || 'Usuário'}!</h1>
+        <h1>Bem-vindo, {user?.nome || "Usuário"}!</h1>
         <p>O que você gostaria de fazer hoje?</p>
       </div>
 
