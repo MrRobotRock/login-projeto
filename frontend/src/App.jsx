@@ -6,12 +6,12 @@ import {
 } from "react-router-dom";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
-import Menu from "./pages/Menu";
 import ProtectedRoute from "./components/ProtectedRoute";
-import authService from "./services/authService";
-import RecuperarSenha from "./pages/RecuperarSenha";
+import Menu from "./pages/Menu";
+import api from "./services/api";
+import RecuperarSenha from "./pages/RedefinirSenha/RecuperarSenha";
 import "./App.css";
-import CodigoVerificacao from "./pages/CodigoVerificacao";
+import CodigoVerificacao from "./pages/RedefinirSenha/CodigoVerificacao";
 import RedefinirSenha from "./pages/RedefinirSenha/RedefinirSenha";
 import ConfiguracaoAdmin from "./pages/ConfiguracaoAdmin/ConfiguracaoAdmin";
 
@@ -22,7 +22,7 @@ function App() {
         <Route
           path="/"
           element={
-            authService.isAuthenticated() ? (
+            api.auth.isAuthenticated() ? (
               <Navigate to="/menu" replace />
             ) : (
               <Navigate to="/login" replace />
@@ -33,7 +33,7 @@ function App() {
         <Route
           path="/login"
           element={
-            authService.isAuthenticated() ? (
+            api.auth.isAuthenticated() ? (
               <Navigate to="/menu" replace />
             ) : (
               <Login />
@@ -43,7 +43,7 @@ function App() {
         <Route
           path="/registro"
           element={
-            authService.isAuthenticated() ? (
+            api.auth.isAuthenticated() ? (
               <Navigate to="/menu" replace />
             ) : (
               <Registro />

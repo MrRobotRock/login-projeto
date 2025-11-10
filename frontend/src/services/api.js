@@ -1,60 +1,67 @@
-// src/services/authService.js
+import axios from "axios";
 
-const API_URL = 'http://localhost:3000'; // Sua URL do backend
+const api = axios.create({
+  baseURL: "http://localhost:3000",
+});
 
-class AuthService {
-  // Faz login e salva o token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Interceptador de respostas: trata erros de autenticação
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      api.auth.logout();
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Métodos de autenticação e gerenciamento de usuário
+api.auth = {
+  // Login: faz a requisição e salva o token
   async login(email, senha) {
     try {
-      const response = await fetch(`${API_URL}/api/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, senha }),
-      });
+      const response = await api.post('/api/login', { email, senha });
+      const { token, user } = response.data;
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Credenciais inválidas');
-      }
-
-      const data = await response.json();
-      
-      // Salva o token no localStorage
-      if (data.token) {
-        localStorage.setItem('token', data.token);
-        
-        // Salva dados do usuário se vier na resposta
-        if (data.user) {
-          localStorage.setItem('user', JSON.stringify(data.user));
+      if (token) {
+        localStorage.setItem('token', token);
+        if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
         }
       }
 
-      return data;
+      return response.data;
     } catch (error) {
-      throw error;
+      throw error.response?.data?.error || 'Credenciais inválidas';
     }
-  }
+  },
 
-  // Faz logout
+  // Logout: limpa dados e redireciona
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    delete api.defaults.headers.common["Authorization"];
     window.location.href = '/login';
-  }
+  },
 
   // Pega o token atual
   getToken() {
     return localStorage.getItem('token');
-  }
+  },
 
   // Verifica se está autenticado
   isAuthenticated() {
     const token = this.getToken();
     if (!token) return false;
 
-    // Verifica se o token expirou
     try {
       const payload = this.decodeToken(token);
       const now = Date.now() / 1000;
@@ -62,9 +69,9 @@ class AuthService {
     } catch (error) {
       return false;
     }
-  }
+  },
 
-  // Decodifica o token JWT (sem validar a assinatura)
+  // Decodifica o token JWT 
   decodeToken(token) {
     try {
       const base64Url = token.split('.')[1];
@@ -79,13 +86,13 @@ class AuthService {
     } catch (error) {
       throw new Error('Token inválido');
     }
-  }
+  },
 
   // Pega dados do usuário
   getCurrentUser() {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   }
-}
+};
 
-export default new AuthService();
+export default api;

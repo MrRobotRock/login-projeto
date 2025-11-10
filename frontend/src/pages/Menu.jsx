@@ -1,14 +1,14 @@
-// src/pages/Menu.jsx
-
 import { LogOut, User, Settings, Home } from "lucide-react";
-import authService from "../services/authService";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 import "./Menu.css";
 
 export default function Menu() {
-  const user = authService.getCurrentUser();
+  const navigate = useNavigate();
+  const user = api.auth.getCurrentUser();
 
   const handleLogout = () => {
-    authService.logout();
+    api.auth.logout();
   };
 
   return (
@@ -31,10 +31,18 @@ export default function Menu() {
           <p>Visualize e edite seu perfil</p>
         </div>
 
-        <div className="menu-card">
+        <div
+          className="menu-card clickable"
+          onClick={() => navigate('/menu/config-admin')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') navigate('/menu/config-admin');
+          }}
+        >
           <Settings size={40} />
           <h3>Configurações</h3>
-          <p>Ajuste suas preferências</p>
+          <p>Configuração de usuários</p>
         </div>
       </div>
 
