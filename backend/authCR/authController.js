@@ -1,13 +1,10 @@
-
+// --- CONFIGURAÇÃO CORRIGIDA ---
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
-const express = require("express");
-const router = express.Router();
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+// (Linhas duplicadas e 'express' e 'router' removidos)
 
 //Sistema de registrar uma conta de usuário
 exports.register = async (req, res) => {
@@ -112,7 +109,8 @@ exports.forgotPassword = async (req, res) => {
   }
 
   // Verifique se o usuário com o email fornecido existe
-  const usuarioExistente = await prisma.usuario.findUnique({
+  // ATENÇÃO: O model é 'user', não 'usuario'
+  const usuarioExistente = await prisma.user.findUnique({
     where: { email },
   });
 

@@ -13,7 +13,7 @@ router.post("/api/login", authController.login);
 router.use("/api", authMiddleware);
 
 //ROTA 3: Listar todos os usuários
-router.get("/api/perfil", authController.perfil);
+//router.get("/api/perfil", authController.perfil);
 
 
 //ROTA 4: Página que permite mudar senha

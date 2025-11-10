@@ -1,24 +1,18 @@
-//4ca88861388a21375c08e5594ad702b20efd0a31e3d3297f067077c8325e5b50
 // --- PARTE 1: CONFIGURAÇÃO INICIAL ---
 const dotenv = require("dotenv");
 dotenv.config();
 
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); // <-- novo import
+const bcrypt = require("bcrypt"); // Usando 'bcrypt' que é o correto
+const jwt = require("jsonwebtoken");
 const cors = require("cors");
+
 const prisma = new PrismaClient();
 const app = express();
-
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
-const cors = require('cors');
 const PORT = 3000;
-const prisma = new PrismaClient();
-const dotenv = require("dotenv");
 
-// Chave secreta para o JWT (ideal: usar variável de ambiente)
+// Chave secreta para o JWT
 const JWT_SECRET = process.env.JWT_SECRET || "4ca88861388a21375c08e5594ad702b20efd0a31e3d3297f067077c8325e5b50";
 
 app.use(express.json());
@@ -30,10 +24,9 @@ app.get("/", (req, res) => {
   res.send("Servidor funcionando!");
 });
 
-// ISSO AQUI É A ROTA DO REGISTRO
+// ROTA DO REGISTRO
 app.post('/api/register', async (req, res) => {
   const { nome, usuario, email, senha } = req.body;
-
 
   try {
     if (!nome || !usuario || !email || !senha) {
@@ -79,11 +72,11 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+// ROTA DO LOGIN
 app.post("/api/login", async (req, res) => {
   try {
     const { email, senha } = req.body;
 
-    // --- BUSCA DE USUÁRIO ---
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -92,24 +85,21 @@ app.post("/api/login", async (req, res) => {
       return res.status(404).json({ error: "Usuário não encontrado." });
     }
 
-    // --- VALIDAÇÃO DE SENHA ---
     const senhaCorreta = await bcrypt.compare(senha, user.senha);
 
     if (!senhaCorreta) {
       return res.status(401).json({ error: "Senha incorreta." });
     }
 
-    // --- GERAÇÃO DO TOKEN JWT ---
     const token = jwt.sign(
       {
         id: user.id,
         email: user.email,
       },
       JWT_SECRET,
-      { expiresIn: "1h" } // token expira em 1 horas
+      { expiresIn: "1h" }
     );
 
-    // --- RESPOSTA FINAL ---
     return res.status(200).json({
       message: "Login bem-sucedido!",
       token,
@@ -121,6 +111,68 @@ app.post("/api/login", async (req, res) => {
 });
 
 
+// =================================================================
+// --- SUA NOVA TAREFA (GET) COMEÇA AQUI ---
+// =================================================================
+// Rota para validar o código de recuperação de senha
+app.get('/api/validar-codigo', async (req, res) => {
+  try {
+    // 1. Receber os dados da URL (Query Params)
+    const { email, token } = req.query;
+
+    if (!email || !token) {
+      return res.status(400).json({ valido: false, error: 'Email e token são obrigatórios.' });
+    }
+
+    // 2. Buscar no banco usando os nomes corretos do schema
+    const resetRequest = await prisma.passwordReset.findFirst({
+      where: {
+        email: email,
+        senhaAleatoria: token // Nome correto do schema
+      }
+    });
+
+    // 3. Verificar se o pedido existe
+    if (!resetRequest) {
+      return res.json({ valido: false, error: 'Token inválido ou e-mail não encontrado.' });
+    }
+
+    // 4. VERIFICAR SE O TOKEN JÁ FOI UTILIZADO
+    if (resetRequest.utilizado === true) {
+      return res.json({ valido: false, error: 'Este código já foi utilizado.' });
+    }
+
+    // 5. Verificar se a data de expiração é válida
+    const agora = new Date();
+    if (agora > resetRequest.dataExpiracao) { // Nome correto do schema
+      return res.json({ valido: false, error: 'Este código expirou.' });
+    }
+
+    // 6. SE TUDO ESTIVER CERTO:
+    // Marcar o código como 'utilizado'
+    await prisma.passwordReset.update({
+      where: {
+        id: resetRequest.id
+      },
+      data: {
+        utilizado: true
+      }
+    });
+
+    // 7. Retornar 'true'
+    res.json({ valido: true });
+
+  } catch (error) {
+    console.error("Erro ao validar token:", error);
+    res.status(500).json({ error: 'Erro interno no servidor.' });
+  }
+});
+// =================================================================
+// --- SUA NOVA TAREFA (GET) TERMINA AQUI ---
+// =================================================================
+
+
+// ROTAS SEPARADAS
 const authRoutes = require("./authCR/authRoutes");
 app.use("/auth", authRoutes);
 
