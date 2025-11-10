@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const usersController = require("./UsersController");
 
+// ROTA 6: Listar todas as roles
+router.get("/roles", usersController.getRoles);
+
 // ROTA 1: Listar todos os usuários
 router.get("/", usersController.getUsers);
 
@@ -16,8 +19,5 @@ router.put("/:id", usersController.updateUser);
 
 // ROTA 5: Deletar usuário
 router.delete("/:id", usersController.deleteUser);
-
-// ROTA 6: Listar todas as roles
-router.get("/roles", usersController.getRoles);
 
 module.exports = router;

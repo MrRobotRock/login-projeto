@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Search, ChevronDown, Check, X } from "lucide-react";
+import { Search, ChevronDown, Check, X, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import './ConfiguracaoAdmin.css';
-
+import "./ConfiguracaoAdmin.css";
 
 export default function ConfiguracaoAdmin() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingUserId, setSavingUserId] = useState(null);
@@ -18,19 +19,19 @@ export default function ConfiguracaoAdmin() {
   async function fetchUsers() {
     try {
       setLoading(true);
-      const res = await api.get('/users');
+      const res = await api.get("/users");
       setUsers(
         res.data.map((u) => ({
           id: u.id,
           nome: u.nome,
           usuario: u.usuario,
           email: u.email,
-          status: typeof u.status === 'boolean' ? u.status : true,
+          status: typeof u.status === "boolean" ? u.status : true,
           roles: Array.isArray(u.roles) ? u.roles : [],
         }))
       );
     } catch (err) {
-      console.error('Erro ao buscar usuários:', err);
+      console.error("Erro ao buscar usuários:", err);
     } finally {
       setLoading(false);
     }
@@ -41,16 +42,17 @@ export default function ConfiguracaoAdmin() {
     if (mounted) {
       fetchUsers();
       // buscar roles do backend
-      api.get('/users/roles')
-        .then(res => setAvailableRoles(res.data || []))
-        .catch(err => console.error('Erro ao buscar roles:', err));
+      api
+        .get("/users/roles")
+        .then((res) => setAvailableRoles(res.data || []))
+        .catch((err) => console.error("Erro ao buscar roles:", err));
     }
     return () => {
       mounted = false;
     };
   }, []);
 
-  // Salva alterações do usuário 
+  // Salva alterações do usuário
   const saveUser = async (userId) => {
     const user = users.find((u) => u.id === userId);
     if (!user) return;
@@ -60,8 +62,8 @@ export default function ConfiguracaoAdmin() {
       await fetchUsers();
       setExpandedUserId(null);
     } catch (err) {
-      console.error('Erro salvando usuário:', err);
-      alert('Erro ao salvar alterações. Verifique o console.');
+      console.error("Erro salvando usuário:", err);
+      alert("Erro ao salvar alterações. Verifique o console.");
     } finally {
       setSavingUserId(null);
     }
@@ -72,15 +74,16 @@ export default function ConfiguracaoAdmin() {
     setExpandedUserId(null);
   };
 
-  // Busca global 
+  // Busca global
   const filteredUsers = useMemo(() => {
     if (!searchTerm.trim()) return users;
-    
+
     const term = searchTerm.toLowerCase();
-    return users.filter(user => 
-      user.nome.toLowerCase().includes(term) ||
-      user.usuario.toLowerCase().includes(term) ||
-      user.email.toLowerCase().includes(term)
+    return users.filter(
+      (user) =>
+        user.nome.toLowerCase().includes(term) ||
+        user.usuario.toLowerCase().includes(term) ||
+        user.email.toLowerCase().includes(term)
     );
   }, [users, searchTerm]);
 
@@ -95,28 +98,30 @@ export default function ConfiguracaoAdmin() {
   }, [searchTerm, itemsPerPage]);
 
   const toggleUserStatus = (userId) => {
-    setUsers(prev => prev.map(u => 
-      u.id === userId ? { ...u, status: !u.status } : u
-    ));
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, status: !u.status } : u))
+    );
   };
 
   const toggleRole = (userId, roleId) => {
-    setUsers(prev => prev.map(u => {
-      if (u.id === userId) {
-        const hasRole = u.roles.includes(roleId);
-        return {
-          ...u,
-          roles: hasRole 
-            ? u.roles.filter(r => r !== roleId)
-            : [...u.roles, roleId]
-        };
-      }
-      return u;
-    }));
+    setUsers((prev) =>
+      prev.map((u) => {
+        if (u.id === userId) {
+          const hasRole = u.roles.includes(roleId);
+          return {
+            ...u,
+            roles: hasRole
+              ? u.roles.filter((r) => r !== roleId)
+              : [...u.roles, roleId],
+          };
+        }
+        return u;
+      })
+    );
   };
 
   const getRoleName = (roleId) => {
-    return availableRoles.find(r => r.id === roleId)?.nome || "";
+    return availableRoles.find((r) => r.id === roleId)?.nome || "";
   };
 
   return (
@@ -126,7 +131,16 @@ export default function ConfiguracaoAdmin() {
           <h1>Configuração de Usuários</h1>
           <p>Gerencie status e permissões dos usuários</p>
         </div>
+        <button
+          className="back-button"
+          onClick={() => navigate("/menu")}
+          type="button"
+        >
+          <ArrowLeft size={20} />
+          <span>Voltar</span>
+        </button>
 
+        <div className="config-controls"></div>
         <div className="config-controls">
           <div className="search-box">
             <Search size={20} className="search-icon" />
@@ -138,7 +152,7 @@ export default function ConfiguracaoAdmin() {
               className="search-input"
             />
             {searchTerm && (
-              <button 
+              <button
                 className="clear-search"
                 onClick={() => setSearchTerm("")}
               >
@@ -150,7 +164,7 @@ export default function ConfiguracaoAdmin() {
           <div className="pagination-selector">
             <span className="per-page-label">Exibir:</span>
             <div className="dropdown-container">
-              <button 
+              <button
                 className="dropdown-button"
                 onClick={() => setShowPerPageDropdown(!showPerPageDropdown)}
               >
@@ -159,10 +173,12 @@ export default function ConfiguracaoAdmin() {
               </button>
               {showPerPageDropdown && (
                 <div className="dropdown-menu">
-                  {[10, 30, 50, 100].map(num => (
+                  {[10, 30, 50, 100].map((num) => (
                     <button
                       key={num}
-                      className={`dropdown-item ${itemsPerPage === num ? 'active' : ''}`}
+                      className={`dropdown-item ${
+                        itemsPerPage === num ? "active" : ""
+                      }`}
                       onClick={() => {
                         setItemsPerPage(num);
                         setShowPerPageDropdown(false);
@@ -181,11 +197,13 @@ export default function ConfiguracaoAdmin() {
         <div className="results-info">
           {searchTerm ? (
             <p>
-              Encontrados <strong>{filteredUsers.length}</strong> usuário(s) de <strong>{users.length}</strong> no total
+              Encontrados <strong>{filteredUsers.length}</strong> usuário(s) de{" "}
+              <strong>{users.length}</strong> no total
             </p>
           ) : (
             <p>
-              Exibindo <strong>{paginatedUsers.length}</strong> de <strong>{users.length}</strong> usuários
+              Exibindo <strong>{paginatedUsers.length}</strong> de{" "}
+              <strong>{users.length}</strong> usuários
             </p>
           )}
         </div>
@@ -211,7 +229,7 @@ export default function ConfiguracaoAdmin() {
                   </td>
                 </tr>
               ) : (
-                paginatedUsers.map(user => (
+                paginatedUsers.map((user) => (
                   <React.Fragment key={user.id}>
                     <tr>
                       <td>{user.id}</td>
@@ -220,25 +238,31 @@ export default function ConfiguracaoAdmin() {
                       <td>{user.email}</td>
                       <td>
                         <button
-                          className={`status-toggle ${user.status ? 'active' : 'inactive'}`}
+                          className={`status-toggle ${
+                            user.status ? "active" : "inactive"
+                          }`}
                           onClick={() => toggleUserStatus(user.id)}
                         >
-                          {user.status ? 'Ativo' : 'Inativo'}
+                          {user.status ? "Ativo" : "Inativo"}
                         </button>
                       </td>
                       <td>
                         <button
                           className="permissions-button"
-                          onClick={() => setExpandedUserId(
-                            expandedUserId === user.id ? null : user.id
-                          )}
+                          onClick={() =>
+                            setExpandedUserId(
+                              expandedUserId === user.id ? null : user.id
+                            )
+                          }
                         >
-                          {user.roles.length > 0 
-                            ? user.roles.map(r => getRoleName(r)).join(", ")
+                          {user.roles.length > 0
+                            ? user.roles.map((r) => getRoleName(r)).join(", ")
                             : "Sem permissões"}
-                          <ChevronDown 
-                            size={16} 
-                            className={expandedUserId === user.id ? 'rotated' : ''}
+                          <ChevronDown
+                            size={16}
+                            className={
+                              expandedUserId === user.id ? "rotated" : ""
+                            }
                           />
                         </button>
                       </td>
@@ -249,10 +273,14 @@ export default function ConfiguracaoAdmin() {
                           <div className="permissions-container">
                             <h4>Atribuir Permissões</h4>
                             <div className="roles-grid">
-                              {availableRoles.map(role => (
+                              {availableRoles.map((role) => (
                                 <button
                                   key={role.id}
-                                  className={`role-chip ${user.roles.includes(role.id) ? 'selected' : ''}`}
+                                  className={`role-chip ${
+                                    user.roles.includes(role.id)
+                                      ? "selected"
+                                      : ""
+                                  }`}
                                   onClick={() => toggleRole(user.id, role.id)}
                                 >
                                   {role.nome}
@@ -268,7 +296,9 @@ export default function ConfiguracaoAdmin() {
                                 onClick={() => saveUser(user.id)}
                                 disabled={savingUserId === user.id}
                               >
-                                {savingUserId === user.id ? 'Salvando...' : 'Salvar'}
+                                {savingUserId === user.id
+                                  ? "Salvando..."
+                                  : "Salvar"}
                               </button>
                               <button
                                 className="cancel-button"
@@ -294,12 +324,12 @@ export default function ConfiguracaoAdmin() {
           <div className="pagination">
             <button
               className="pagination-button"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
             >
               Anterior
             </button>
-            
+
             <div className="pagination-numbers">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let pageNum;
@@ -312,11 +342,13 @@ export default function ConfiguracaoAdmin() {
                 } else {
                   pageNum = currentPage - 2 + i;
                 }
-                
+
                 return (
                   <button
                     key={pageNum}
-                    className={`pagination-number ${currentPage === pageNum ? 'active' : ''}`}
+                    className={`pagination-number ${
+                      currentPage === pageNum ? "active" : ""
+                    }`}
                     onClick={() => setCurrentPage(pageNum)}
                   >
                     {pageNum}
@@ -327,7 +359,7 @@ export default function ConfiguracaoAdmin() {
 
             <button
               className="pagination-button"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
             >
               Próxima
