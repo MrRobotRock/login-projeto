@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { User, Lock, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import authService from '../services/authService';
+import api from '../services/api';
 import './Login.css';
 
 export default function Login() {
@@ -27,7 +27,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await authService.login(formData.email, formData.senha);
+      await api.auth.login(formData.email, formData.senha);
       console.log('Login bem-sucedido!');
       navigate('/menu');
     } catch (err) {

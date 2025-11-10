@@ -2,12 +2,11 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET;
-
+const JWT_SECRET = process.env.JWT_SECRET || "4ca88861388a21375c08e5594ad702b20efd0a31e3d3297f067077c8325e5b50";
 //Sistema de registrar uma conta de usuário
 exports.register = async (req, res) => {
   const { nome, usuario, email, senha } = req.body;
-
+  
   try {
     if (!nome || !usuario || !email || !senha) {
       return res
@@ -47,7 +46,15 @@ exports.register = async (req, res) => {
 
     res.status(201).json({
       message: "Usuário criado com sucesso!",
-      userId: novoUsuario.id,
+      token,
+      user: {
+        id: novoUsuario.id,
+        nome: novoUsuario.nome,
+        usuario: novoUsuario.usuario,
+        email: novoUsuario.email,
+        status: novoUsuario.status,
+        roles: []
+      }
     });
   } catch (error) {
     console.error(error);
@@ -60,18 +67,25 @@ exports.login = async (req, res) => {
   try {
     const { email, senha } = req.body;
 
-    // --- BUSCA DE USUÁRIO ---
+    // --- BUSCA DE USUÁRIO COM ROLES ---
     const user = await prisma.user.findUnique({
       where: { email },
+      include: {
+        userRoles: {
+          include: { 
+            role: true 
+          }
+        }
+      }
     });
 
     if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado." });
     }
-
-    // --- VALIDAÇÃO DE SENHA ---
+    if (!user.status) {
+      return res.status(401).json({ error: "Usuário inativo. Entre em contato com o administrador." });
+    }
     const senhaCorreta = await bcrypt.compare(senha, user.senha);
-
     if (!senhaCorreta) {
       return res.status(401).json({ error: "Senha incorreta." });
     }
@@ -81,23 +95,31 @@ exports.login = async (req, res) => {
       {
         id: user.id,
         email: user.email,
+        usuario: user.usuario
       },
       JWT_SECRET,
-      { expiresIn: "1h" } // token expira em 1 horas
+      { expiresIn: "24h" } // token expira em 24 horas
     );
 
-    // --- RESPOSTA FINAL ---
     return res.status(200).json({
       message: "Login bem-sucedido!",
       token,
+      user: {
+        id: user.id,
+        nome: user.nome,
+        usuario: user.usuario,
+        email: user.email,
+        status: user.status,
+        roles: user.userRoles.map(ur => ({
+          id: ur.role.id,
+          nome: ur.role.nome
+        }))
+      }
     });
   } catch (error) {
-    console.error("ERRO INESPERADO:", error);
+    console.error("ERRO NO LOGIN:", error);
     res.status(500).json({ error: "Erro interno no servidor." });
   }
-  //
-  //Ainda não implementado o sistema de login
-  //
 };
 
 //Sistema de "esqueci minha senha"
