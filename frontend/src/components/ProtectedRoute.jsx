@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom';
-import authService from '../services/authService';
+import api from '../services/api';
 
 function ProtectedRoute({ children }) {
-  const isAuthenticated = authService.isAuthenticated();
+  const isAuthenticated = api.auth.isAuthenticated();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/users/api';
+import api from '../services/api';
 import './Registro.css';
 
 export default function Registro() {
