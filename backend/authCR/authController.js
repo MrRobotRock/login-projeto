@@ -1,15 +1,16 @@
-// --- CONFIGURAÇÃO CORRIGIDA ---
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
-// (Linhas duplicadas e 'express' e 'router' removidos)
+const express = require("express");
+const router = express.Router();
+const { PrismaClient } = require("@prisma/client");
 
 //Sistema de registrar uma conta de usuário
 exports.register = async (req, res) => {
   const { nome, usuario, email, senha } = req.body;
-  
+
   try {
     if (!nome || !usuario || !email || !senha) {
       return res
@@ -97,6 +98,9 @@ exports.login = async (req, res) => {
     console.error("ERRO INESPERADO:", error);
     res.status(500).json({ error: "Erro interno no servidor." });
   }
+  //
+  //Ainda não implementado o sistema de login
+  //
 };
 
 //Sistema de "esqueci minha senha"
