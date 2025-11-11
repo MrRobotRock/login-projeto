@@ -88,10 +88,27 @@ api.auth = {
     }
   },
 
-  // Pega dados do usuário
-  getCurrentUser() {
+  getCurrentUser: () => {
     const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    if (userStr) {
+      try {
+        return JSON.parse(userStr);
+      } catch (e) {
+        console.error('Erro ao parsear usuário:', e);
+        return null;
+      }
+    }
+    return null;
+  },
+
+  logout: () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/';
+  },
+
+  isAuthenticated: () => {
+    return !!localStorage.getItem('token');
   }
 };
 
