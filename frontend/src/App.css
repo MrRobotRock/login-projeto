@@ -4,35 +4,33 @@
   box-sizing: border-box;
 }
 
-
 :root {
-    --cor-gradiente-fundo: linear-gradient(135deg, #E4F0E1 0%, #A3C69D 100%);
-    --cor-fundo-card: #F7FDF4;
-    --cor-borda-input: #C8E6C9;
-    --cor-destaque: #4CAF50; 
-    --cor-destaque-hover: #388E3C; 
-    --cor-destaque-foco-sombra: rgba(76, 175, 80, 0.18);
-    --cor-texto-principal: #2E4F2C; 
-    --cor-texto-secundario: #4A5568; 
-    --cor-label: #2E4F2C;
-    --cor-link: #2E4F2C; 
-    --cor-icones: #A3C69D;
-    --cor-erro-fundo: #FEF2F2;
-    --cor-erro-borda: #FECACA;
-    --cor-erro-texto: #DC2626;
+  --cor-gradiente-fundo: linear-gradient(135deg, #e4f0e1 0%, #a3c69d 100%);
+  --cor-fundo-card: #f7fdf4;
+  --cor-borda-input: #c8e6c9;
+  --cor-destaque: #4caf50;
+  --cor-destaque-hover: #388e3c;
+  --cor-destaque-foco-sombra: rgba(76, 175, 80, 0.18);
+  --cor-texto-principal: #2e4f2c;
+  --cor-texto-secundario: #4a5568;
+  --cor-label: #2e4f2c;
+  --cor-link: #2e4f2c;
+  --cor-icones: #a3c69d;
+  --cor-erro-fundo: #fef2f2;
+  --cor-erro-borda: #fecaca;
+  --cor-erro-texto: #dc2626;
 }
 
-
-
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow-x: hidden;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

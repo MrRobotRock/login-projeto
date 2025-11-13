@@ -14,6 +14,7 @@ import "./App.css";
 import CodigoVerificacao from "./pages/RedefinirSenha/CodigoVerificacao";
 import RedefinirSenha from "./pages/RedefinirSenha/RedefinirSenha";
 import ConfiguracaoAdmin from "./pages/ConfiguracaoAdmin/ConfiguracaoAdmin";
+import FormConsultoria from "./pages/FormConsultoria/FormConsultoria";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
         <Route path="/verificar-codigo" element={<CodigoVerificacao />} />
         <Route path="/redefinir-senha" element={<RedefinirSenha />} />
         <Route path="/menu/config-admin" element={<ConfiguracaoAdmin />} />
+        <Route path="/menu/form-consultoria" element={<FormConsultoria />} />
       </Routes>
     </Router>
   );
