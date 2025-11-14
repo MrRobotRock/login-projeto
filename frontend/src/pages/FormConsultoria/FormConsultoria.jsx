@@ -32,7 +32,7 @@ export default function FormConsultoria() {
       <div className="fc-card">
         <button
           className="back-button"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/menu")}
           type="button"
         >
           <ArrowLeft size={20} />
