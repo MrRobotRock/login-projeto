@@ -4,62 +4,78 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET || "4ca88861388a21375c08e5594ad702b20efd0a31e3d3297f067077c8325e5b50";
 //Sistema de registrar uma conta de usuário
+
 exports.register = async (req, res) => {
-  const { nome, usuario, email, senha } = req.body;
-  
-  try {
-    if (!nome || !usuario || !email || !senha) {
-      return res
-        .status(400)
-        .json({ error: "Todos os campos são obrigatórios" });
+  const { nome, usuario, email, senha } = req.body;
+  
+  try {
+    if (!nome || !usuario || !email || !senha) {
+      return res
+        .status(400)
+        .json({ error: "Todos os campos são obrigatórios" });
+    }
+
+    const emailExiste = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (emailExiste) {
+      return res.status(409).json({ error: "Este email já está em uso" });
+    }
+
+    const usuarioExiste = await prisma.user.findUnique({
+      where: { usuario },
+    });
+
+    if (usuarioExiste) {
+      return res
+        .status(409)
+        .json({ error: "Este nome de usuário já está em uso" });
+    }
+
+    const roleComum = await prisma.role.findUnique({
+      where: { nome: "COMUM" },
+    });
+
+    if (!roleComum) {
+      console.error("ERRO: Role 'COMUM' não encontrada. Rode o 'npm run prisma:seed'");
+      throw new Error("Erro de configuração do servidor.");
     }
 
-    const emailExiste = await prisma.user.findUnique({
-      where: { email },
-    });
+    const salt = await bcrypt.genSalt(10);
+    const senhaHash = await bcrypt.hash(senha, salt);
 
-    if (emailExiste) {
-      return res.status(409).json({ error: "Este email já está em uso" });
-    }
+    const novoUsuario = await prisma.user.create({
+      data: {
+        nome,
+        usuario,
+        email,
+        senha: senhaHash,
+        userRoles: {
+          create: [
+            {
+              roleId: roleComum.id,
+            }
+          ]
+        }
+      },
+    });
 
-    const usuarioExiste = await prisma.user.findUnique({
-      where: { usuario },
-    });
-
-    if (usuarioExiste) {
-      return res
-        .status(409)
-        .json({ error: "Este nome de usuário já está em uso" });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const senhaHash = await bcrypt.hash(senha, salt);
-
-    const novoUsuario = await prisma.user.create({
-      data: {
-        nome,
-        usuario,
-        email,
-        senha: senhaHash,
-      },
-    });
-
-    res.status(201).json({
-      message: "Usuário criado com sucesso!",
-      token,
-      user: {
-        id: novoUsuario.id,
-        nome: novoUsuario.nome,
-        usuario: novoUsuario.usuario,
-        email: novoUsuario.email,
-        status: novoUsuario.status,
-        roles: []
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro interno ao criar o usuário" });
-  }
+    res.status(201).json({
+      message: "Usuário criado com sucesso!",
+      user: {
+        id: novoUsuario.id,
+        nome: novoUsuario.nome,
+        usuario: novoUsuario.usuario,
+        email: novoUsuario.email,
+        status: novoUsuario.status,
+        roles: [{ id: roleComum.id, nome: roleComum.nome }] 
+      }
+    });
+  } catch (error) {
+    console.error(error); 
+    res.status(500).json({ error: "Erro interno ao criar o usuário" });
+  }
 };
 
 //Sistema de logar numa conta de usuário
@@ -132,7 +148,7 @@ exports.forgotPassword = async (req, res) => {
   }
 
   // Verifique se o usuário com o email fornecido existe
-  const usuarioExistente = await prisma.usuario.findUnique({
+  const usuarioExistente = await prisma.user.findUnique({
     where: { email },
   });
 
@@ -143,6 +159,11 @@ exports.forgotPassword = async (req, res) => {
   //
   // Ainda não implementado o envio de e-mail para restauração de senha
   //
+
+  // mensagem de sucesso simulada
+  return res.status(200).json({ 
+    message: "O backend recebeu seu pedido! (Mas ainda não faz nada com ele)" 
+  });
 };
 
 process.on("beforeExit", async () => {
