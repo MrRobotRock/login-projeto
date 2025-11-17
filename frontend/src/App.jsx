@@ -14,6 +14,7 @@ import "./App.css";
 import CodigoVerificacao from "./pages/RedefinirSenha/CodigoVerificacao";
 import RedefinirSenha from "./pages/RedefinirSenha/RedefinirSenha";
 import ConfiguracaoAdmin from "./pages/ConfiguracaoAdmin/ConfiguracaoAdmin";
+import FormConsultoria from "./pages/FormConsultoria/FormConsultoria";
 
 function App() {
   return (
@@ -60,9 +61,10 @@ function App() {
         />
         <Route path="*" element={<Navigate to="/login" replace />} />
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-        <Route path="/codigo-verificacao" element={<CodigoVerificacao />} />
         <Route path="/verificar-codigo" element={<CodigoVerificacao />} />
         <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+
+        <Route path="/menu/form-consultoria" element={<FormConsultoria />} />
         <Route path="/menu/config-admin" element={<ConfiguracaoAdmin />} />
       </Routes>
     </Router>

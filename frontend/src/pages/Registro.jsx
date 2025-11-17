@@ -46,8 +46,15 @@ export default function Registro() {
     try {
       const { confirmarSenha, ...dadosRegistro } = formData;
       
-     const response = await api.post('/api/register', dadosRegistro); 
+      const response = await api.post('/api/register', dadosRegistro); 
       console.log('Cadastro bem-sucedido:', response);
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+      }
       
       setSuccess('Cadastro realizado com sucesso! Redirecionando...');
       
@@ -55,7 +62,9 @@ export default function Registro() {
         navigate('/login');
       }, 2000);
     } catch (err) {
-      setError(err.message || 'Erro ao fazer cadastro. Tente novamente.');
+      const errorMessage = err.response?.data?.error || err.message || 'Erro ao fazer cadastro. Tente novamente.';
+      setError(errorMessage);
+      console.error('Erro no cadastro:', err);
     } finally {
       setLoading(false);
     }

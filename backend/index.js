@@ -1,34 +1,40 @@
-
 const dotenv = require("dotenv");
 dotenv.config();
-
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); 
 const cors = require("cors");
+const { errorHandler, notFound } = require("./consultoriaCR/errorHandler"); 
+const authMiddleware = require("./authCR/authMiddleware");
+
 const prisma = new PrismaClient();
 const app = express();
 const PORT = 3000;
 
-const JWT_SECRET = process.env.JWT_SECRET || "4ca88861388a21375c08e5594ad702b20efd0a31e3d3297f067077c8325e5b50";
-
-dotenv.config();
 app.use(express.json());
-app.use(cors());
-
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  credentials: true
+}));
 
 app.get("/", (req, res) => {
   res.send("Servidor funcionando!");
 });
 
-const usersRoutes = require("./UsersCR/UsersRoutes");
 const authRoutes = require("./authCR/authRoutes");
+const consultoriaRoutes = require("./consultoriaCR/consultoriaRoutes");
+const usersRoutes = require("./UsersCR/UsersRoutes");
 
 app.use("/", authRoutes); 
-app.use("/users", usersRoutes);
 
-// --- PARTE 3: INÍCIO DO SERVIDOR ---
+app.use('/api/consultorias', consultoriaRoutes);
+
+app.use("/users", authMiddleware, usersRoutes);
+
+// Middlewares de erro 
+app.use(notFound);
+app.use(errorHandler);
+
+// Início do servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
