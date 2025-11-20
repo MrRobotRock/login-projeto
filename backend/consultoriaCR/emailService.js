@@ -1,6 +1,5 @@
 const nodemailer = require('nodemailer');
 
-// Configurar transporter
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
@@ -11,7 +10,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Template de e-mail para o cliente
 const templateEmailCliente = (consultoria) => {
   return `
     <!DOCTYPE html>
@@ -82,7 +80,7 @@ const templateEmailCliente = (consultoria) => {
         <p>Recebemos sua solicitação de consultoria com sucesso! Nossa equipe irá analisar suas necessidades e entraremos em contato em breve.</p>
         
         <div class="info-box">
-          <h3>📋 Detalhes da Solicitação</h3>
+          <h3>Detalhes da Solicitação</h3>
           <div class="info-row">
             <span class="label">Protocolo:</span> ${consultoria.id}
           </div>
@@ -107,7 +105,7 @@ const templateEmailCliente = (consultoria) => {
         </div>
         
         <div class="info-box">
-          <h3>📝 Sua Mensagem</h3>
+          <h3> Sua Mensagem</h3>
           <p>${consultoria.descricao}</p>
         </div>
         
@@ -275,7 +273,6 @@ const enviarEmailCliente = async (consultoria) => {
   }
 };
 
-// Enviar notificação para a equipe interna
 const enviarEmailEquipe = async (consultoria) => {
   try {
     await transporter.sendMail({
@@ -292,7 +289,6 @@ const enviarEmailEquipe = async (consultoria) => {
   }
 };
 
-// Enviar ambos os e-mails
 const enviarNotificacoes = async (consultoria) => {
   const resultados = await Promise.allSettled([
     enviarEmailCliente(consultoria),
