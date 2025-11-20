@@ -60,7 +60,6 @@ const criarConsultoria = async (req, res, next) => {
   }
 };
 
-// Lista todas as consultorias
 const listarConsultorias = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, status, email, empresa } = req.query;
@@ -111,7 +110,6 @@ const listarConsultorias = async (req, res, next) => {
   }
 };
 
-// Buscar uma consultoria específica
 const buscarConsultoria = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -136,13 +134,11 @@ const buscarConsultoria = async (req, res, next) => {
   }
 };
 
-// Atualizar status da consultoria
 const atualizarStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Validar status
     const statusValidos = ['pendente', 'em_analise', 'confirmada', 'concluida', 'cancelada'];
     if (!statusValidos.includes(status)) {
       return res.status(400).json({
@@ -151,7 +147,7 @@ const atualizarStatus = async (req, res, next) => {
       });
     }
 
-    // Verificar se existe
+    // Verifica se existe
     const consultoriaExistente = await prisma.consultoria.findUnique({
       where: { id }
     });
@@ -178,13 +174,12 @@ const atualizarStatus = async (req, res, next) => {
   }
 };
 
-// Adicionar observações ou responsável
+// Adiciona observações ou responsável
 const atualizarConsultoria = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { observacoes, responsavel, dataAtendimento } = req.body;
 
-    // Verificar se existe
     const consultoriaExistente = await prisma.consultoria.findUnique({
       where: { id }
     });
