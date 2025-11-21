@@ -17,8 +17,9 @@ model User {
   criadoEm   DateTime @default(now()) @map("criado_em")
   alteradoEm DateTime @updatedAt @map("alterado_em")
 
-  userRoles      UserRole[]
-  passwordResets PasswordReset[]
+  userRoles         UserRole[]
+  passwordResets    PasswordReset[]
+  consultoriasAtribuidas Consultoria[]
 
   @@index([email])
   @@index([usuario])
@@ -78,7 +79,8 @@ model Consultoria {
   criadoEm       DateTime @default(now()) @map("criado_em")
   alteradoEm     DateTime @updatedAt @map("alterado_em")
   
-  responsavel    String?
+  responsavelId  String?  @map("responsavel_id")
+  responsavel    User?    @relation(fields: [responsavelId], references: [id], onDelete: SetNull)
   observacoes    String?  @db.Text
   dataAtendimento DateTime? @map("data_atendimento")
   

@@ -7,12 +7,58 @@ const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
 
-// Configuração do transporter usando maildev
-const transporter = nodemailer.createTransport({
-  host: "localhost",
-  port: 1025,
-  ignoreTLS: true,
-});
+// Configuração do transporter
+const getEmailTransporter = () => {
+  const emailService = process.env.EMAIL_SERVICE || "gmail";
+  const emailUser = process.env.EMAIL_USER;
+  const emailPassword = process.env.EMAIL_PASSWORD;
+
+  if (!emailUser || !emailPassword) {
+    throw new Error("EMAIL_USER e EMAIL_PASSWORD não configurados no .env");
+  }
+
+  // Configurações para diferentes provedores
+  const config = {
+    gmail: {
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: emailUser,
+        pass: emailPassword.trim()
+      }
+    },
+    outlook: {
+      host: "smtp-mail.outlook.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: emailUser,
+        pass: emailPassword.trim()
+      }
+    },
+    office365: {
+      host: "smtp.office365.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: emailUser,
+        pass: emailPassword.trim()
+      }
+    },
+    yahoo: {
+      host: "smtp.mail.yahoo.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: emailUser,
+        pass: emailPassword.trim()
+      }
+    }
+  };
+
+  return nodemailer.createTransport(config[emailService] || config.gmail);
+};
 
 // Sistema de registrar uma conta de usuário
 exports.register = async (req, res) => {
@@ -182,8 +228,9 @@ exports.forgotPassword = async (req, res) => {
       .replace("{{CODIGO_RECUPERACAO}}", codigoRecuperacao);
 
     try {
+      const transporter = getEmailTransporter();
       await transporter.sendMail({
-        from: '"Empresa" <empresa@empresa.com>',
+        from: `"${process.env.EMAIL_FROM_NAME || 'Empresa'}" <${process.env.EMAIL_USER}>`,
         to: email,
         subject: "Recuperação de senha",
         html: htmlTemplate,
@@ -193,7 +240,7 @@ exports.forgotPassword = async (req, res) => {
     } catch (emailError) {
       console.error("❌ Erro ao enviar email:", emailError);
       return res.status(500).json({ 
-        error: "Erro ao enviar email. Verifique se o MailDev está rodando." 
+        error: "Erro ao enviar email. Verifique as credenciais no .env" 
       });
     }
 

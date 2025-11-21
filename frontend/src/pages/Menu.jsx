@@ -1,4 +1,4 @@
-import { LogOut, User, Settings, Home, Scroll } from "lucide-react";
+import { LogOut, User, Settings, Home, Scroll, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "./Menu.css";
@@ -38,12 +38,27 @@ export default function Menu() {
           tabIndex={0}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ")
-              navigate("/menu/config-admin");
+              navigate("/menu/form-consultoria");
           }}
         >
           <Scroll size={40} />
           <h3>Solicitação de consultoria</h3>
           <p>Solicite a nossa consultoria</p>
+        </div>
+
+        <div
+          className="menu-card clickable"
+          onClick={() => navigate("/menu/consultorias")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ")
+              navigate("/menu/consultorias");
+          }}
+        >
+          <FileText size={40} />
+          <h3>Solicitações Recebidas</h3>
+          <p>Gerencie as solicitações de consultoria</p>
         </div>
 
         <div

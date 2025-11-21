@@ -15,6 +15,7 @@ import CodigoVerificacao from "./pages/RedefinirSenha/CodigoVerificacao";
 import RedefinirSenha from "./pages/RedefinirSenha/RedefinirSenha";
 import ConfiguracaoAdmin from "./pages/ConfiguracaoAdmin/ConfiguracaoAdmin";
 import FormConsultoria from "./pages/FormConsultoria/FormConsultoria";
+import ConsultoriasList from "./pages/Consultorias/ConsultoriasList";
 
 function App() {
   return (
@@ -66,6 +67,14 @@ function App() {
 
         <Route path="/menu/form-consultoria" element={<FormConsultoria />} />
         <Route path="/menu/config-admin" element={<ConfiguracaoAdmin />} />
+        <Route 
+          path="/menu/consultorias" 
+          element={
+            <ProtectedRoute>
+              <ConsultoriasList />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </Router>
   );
