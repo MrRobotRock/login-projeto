@@ -1,0 +1,54 @@
+:root {
+    --cor-gradiente-fundo: linear-gradient(135deg, #E4F0E1 0%, #A3C69D 100%);
+   
+    --cor-fundo-card: #F7FDF4;
+    --cor-borda-input: #C8E6C9;
+    
+    --cor-destaque: #4CAF50; 
+    --cor-destaque-hover: #388E3C; 
+    --cor-destaque-foco-sombra: rgba(76, 175, 80, 0.18);
+
+    --cor-texto-principal: #2E4F2C;
+    --cor-texto-secundario: #4A5568; 
+    --cor-label: #2E4F2C; 
+    --cor-link: #2E4F2C; 
+
+    --cor-icones: #A3C69D;
+
+    --cor-erro-fundo: #FEF2F2;
+    --cor-erro-borda: #FECACA;
+    --cor-erro-texto: #DC2626;
+}
+
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-text h1 {
+  font-size: 4rem; 
+  margin: 0;
+}
+
+.hero-text h2 {
+  font-size: 2rem; 
+  margin-top: 1rem;
+}
+
+.hero-image {
+  flex: 1;
+  text-align: center;
+}
+
+.hero-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}

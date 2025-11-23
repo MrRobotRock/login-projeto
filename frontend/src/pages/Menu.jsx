@@ -19,9 +19,18 @@ export default function Menu() {
       </div>
 
       <div className="menu-cards">
-        <div className="menu-card">
-          <Home size={40} />
-          <h3>Início</h3>
+        <div
+          className="menu-card clickable"
+          onClick={() => navigate("/")}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ")
+              navigate("/");
+          }}
+        >
+          <Scroll size={40} />
+          <h3>Ínicio</h3>
           <p>Acesse a página inicial</p>
         </div>
 
