@@ -1,6 +1,7 @@
-import { LogOut, User, Settings, Home, Scroll, FileText } from "lucide-react";
+import { LogOut, User, Settings, Home, Scroll, FileText, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { hasPermission } from "../utils/permissionsHelper";
 import "./Menu.css";
 
 export default function Menu() {
@@ -11,6 +12,63 @@ export default function Menu() {
     api.auth.logout();
   };
 
+  const menuCards = [
+    {
+      id: "home",
+      icon: Home,
+      title: "Início",
+      description: "Acesse a página inicial",
+      path: "/",
+      permission: null 
+    },
+    {
+      id: "profile",
+      icon: User,
+      title: "Perfil",
+      description: "Visualize e edite seu perfil",
+      path: "/menu/perfil",
+      permission: "profile:edit"
+    },
+    {
+      id: "consultoria",
+      icon: Scroll,
+      title: "Solicitação de consultoria",
+      description: "Solicite a nossa consultoria",
+      path: "/menu/form-consultoria",
+      permission: "consultations:create"
+    },
+    {
+      id: "consultorias-recebidas",
+      icon: FileText,
+      title: "Solicitações Recebidas",
+      description: "Gerencie as solicitações de consultoria",
+      path: "/menu/consultorias",
+      permission: "consultations:view" 
+    },
+    {
+      id: "minhas-consultorias",
+      icon: FileText,
+      title: "Minhas Consultorias",
+      description: "Veja suas solicitações de consultoria",
+      path: "/menu/minhas-consultorias",
+      permission: "consultations:view_own" 
+    },
+    {
+      id: "config-admin",
+      icon: Settings,
+      title: "Configuração de Usuários",
+      description: "Gerencie usuários e permissões",
+      path: "/menu/config-admin",
+      permission: "users:view_all" 
+    }
+  ];
+
+  // Filtra cards baseado nas permissões
+  const availableCards = menuCards.filter(card => {
+    if (!card.permission) return true;
+    return hasPermission(user, card.permission);
+  });
+
   return (
     <div className="menu-container">
       <div className="menu-header">
@@ -19,71 +77,27 @@ export default function Menu() {
       </div>
 
       <div className="menu-cards">
-        <div
-          className="menu-card clickable"
-          onClick={() => navigate("/")}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ")
-              navigate("/");
-          }}
-        >
-          <Scroll size={40} />
-          <h3>Ínicio</h3>
-          <p>Acesse a página inicial</p>
-        </div>
-
-        <div className="menu-card">
-          <User size={40} />
-          <h3>Perfil</h3>
-          <p>Visualize e edite seu perfil</p>
-        </div>
-
-        <div
-          className="menu-card clickable"
-          onClick={() => navigate("/menu/form-consultoria")}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ")
-              navigate("/menu/form-consultoria");
-          }}
-        >
-          <Scroll size={40} />
-          <h3>Solicitação de consultoria</h3>
-          <p>Solicite a nossa consultoria</p>
-        </div>
-
-        <div
-          className="menu-card clickable"
-          onClick={() => navigate("/menu/consultorias")}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ")
-              navigate("/menu/consultorias");
-          }}
-        >
-          <FileText size={40} />
-          <h3>Solicitações Recebidas</h3>
-          <p>Gerencie as solicitações de consultoria</p>
-        </div>
-
-        <div
-          className="menu-card clickable"
-          onClick={() => navigate("/menu/config-admin")}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ")
-              navigate("/menu/config-admin");
-          }}
-        >
-          <Settings size={40} />
-          <h3>Configurações</h3>
-          <p>Configuração de usuários</p>
-        </div>
+        {availableCards.map((card) => {
+          const IconComponent = card.icon;
+          return (
+            <div
+              key={card.id}
+              className="menu-card clickable"
+              onClick={() => navigate(card.path)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  navigate(card.path);
+                }
+              }}
+            >
+              <IconComponent size={40} />
+              <h3>{card.title}</h3>
+              <p>{card.description}</p>
+            </div>
+          );
+        })}
       </div>
 
       <div className="user-info">

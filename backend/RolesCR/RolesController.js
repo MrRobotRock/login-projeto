@@ -80,7 +80,6 @@ exports.createRole = (req, res) => {
     return validationError(res, "Nome e descrição são obrigatórios");
   }
 
-  // Valida se permissoes é array
   if (permissoes && !Array.isArray(permissoes)) {
     return validationError(res, "Permissões deve ser um array");
   }
@@ -127,13 +126,11 @@ exports.createRole = (req, res) => {
 exports.getAllRoles = (req, res) => {
   let filteredRoles = [...roles];
   
-  // FILTRO 1: Por status ativo/inativo
   if (req.query.ativo !== undefined) {
     const ativo = req.query.ativo === 'true';
     filteredRoles = filteredRoles.filter(role => role.ativo === ativo);
   }
   
-  // FILTRO 2: Por nome (busca parcial)
   if (req.query.nome) {
     const termoBusca = req.query.nome.toLowerCase();
     filteredRoles = filteredRoles.filter(role => 
@@ -141,7 +138,6 @@ exports.getAllRoles = (req, res) => {
     );
   }
   
-  // FILTRO 3: Por permissão específica
   if (req.query.permisao) {
     filteredRoles = filteredRoles.filter(role =>
       role.permissoes.includes(req.query.permisao)

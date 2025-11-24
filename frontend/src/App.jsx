@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
-import ProtectedRoute from "./components/ProtectedRoute"; // Importação do arquivo atualizado
+import ProtectedRoute from "./components/ProtectedRoute";
 import Menu from "./pages/Menu";
 import api from "./services/api";
 import RecuperarSenha from "./pages/RedefinirSenha/RecuperarSenha";
@@ -15,6 +15,7 @@ import CodigoVerificacao from "./pages/RedefinirSenha/CodigoVerificacao";
 import RedefinirSenha from "./pages/RedefinirSenha/RedefinirSenha";
 import ConfiguracaoAdmin from "./pages/ConfiguracaoAdmin/ConfiguracaoAdmin";
 import FormConsultoria from "./pages/FormConsultoria/FormConsultoria";
+import ConsultoriasList from "./pages/Consultorias/ConsultoriasList";
 import Home from "./pages/homePages/Home";
 
 function App() {
@@ -45,7 +46,10 @@ function App() {
           }
         />
 
-        
+        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+        <Route path="/verificar-codigo" element={<CodigoVerificacao />} />
+        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+
         <Route
           path="/menu"
           element={
@@ -55,29 +59,43 @@ function App() {
           }
         />
 
-        <Route 
-          path="/menu/form-consultoria" 
+        <Route
+          path="/menu/form-consultoria"
           element={
             <ProtectedRoute requiredPermission="consultations:create">
               <FormConsultoria />
             </ProtectedRoute>
-          } 
+          }
         />
 
-        <Route 
-          path="/menu/config-admin" 
+        <Route
+          path="/menu/consultorias"
+          element={
+            <ProtectedRoute requiredPermission="consultations:view">
+              <ConsultoriasList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/menu/minhas-consultorias"
+          element={
+            <ProtectedRoute requiredPermission="consultations:view_own">
+              <ConsultoriasList userOnly={true} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/menu/config-admin"
           element={
             <ProtectedRoute requiredPermission="users:view_all">
               <ConfiguracaoAdmin />
             </ProtectedRoute>
-          } 
+          }
         />
 
-
-        <Route path="*" element={<Navigate to="/login" replace />} />
-        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-        <Route path="/verificar-codigo" element={<CodigoVerificacao />} />
-        <Route path="/redefinir-senha" element={<RedefinirSenha />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

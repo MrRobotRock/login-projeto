@@ -379,6 +379,270 @@
   font-weight: 500;
 }
 
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: white;
+  border: 2px solid var(--cor-borda-input);
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--cor-texto-principal);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+}
+
+.back-button:hover {
+  background: var(--cor-destaque);
+  border-color: var(--cor-destaque);
+  color: white;
+  transform: translateX(-4px);
+}
+
+.back-button svg {
+  transition: transform 0.2s;
+}
+
+.back-button:hover svg {
+  transform: translateX(-2px);
+}
+
+.success-message {
+  padding: 12px 20px;
+  background-color: #D4EDDA;
+  border: 1px solid #C3E6CB;
+  border-radius: 8px;
+  color: #155724;
+  margin-bottom: 20px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.empty-icon {
+  color: var(--cor-icones);
+  margin-bottom: 20px;
+}
+
+.empty-state h3 {
+  color: var(--cor-texto-principal);
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.empty-state p {
+  color: var(--cor-texto-secundario);
+  margin-bottom: 30px;
+}
+
+.btn-primary {
+  background: var(--cor-destaque);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--cor-destaque-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+/* Grid de cards para cliente */
+.consultorias-grid-cliente {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 24px;
+  margin: 20px 0;
+}
+
+.consultoria-card-cliente {
+  background: white;
+  border: 2px solid var(--cor-borda-input);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s;
+}
+
+.consultoria-card-cliente:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.consultoria-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+.consultoria-card-title h3 {
+  color: var(--cor-texto-principal);
+  font-size: 1.4rem;
+  margin: 0 0 8px 0;
+}
+
+.consultoria-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cor-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.status-badge-large {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.status-badge-large.pendente {
+  background: #FFF3CD;
+  color: #856404;
+}
+
+.status-badge-large.em_analise {
+  background: #CCE5FF;
+  color: #004085;
+}
+
+.status-badge-large.confirmada {
+  background: #D1ECF1;
+  color: #0C5460;
+}
+
+.status-badge-large.concluida {
+  background: #D4EDDA;
+  color: #155724;
+}
+
+.status-badge-large.cancelada {
+  background: #F8D7DA;
+  color: #721C24;
+}
+
+.consultoria-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.status-description {
+  color: var(--cor-texto-secundario);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 12px;
+  background: rgba(76, 175, 80, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid var(--cor-destaque);
+}
+
+.consultoria-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: var(--cor-texto-principal);
+}
+
+.btn-expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px solid var(--cor-borda-input);
+  border-radius: 8px;
+  color: var(--cor-texto-principal);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.btn-expand:hover {
+  background: var(--cor-destaque);
+  border-color: var(--cor-destaque);
+  color: white;
+}
+
+.btn-expand svg {
+  transition: transform 0.2s;
+}
+
+.btn-expand svg.rotated {
+  transform: rotate(180deg);
+}
+
+.consultoria-details {
+  padding-top: 16px;
+  border-top: 2px solid var(--cor-borda-input);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.consultoria-details h4 {
+  color: var(--cor-texto-principal);
+  font-size: 1rem;
+  margin: 0 0 8px 0;
+}
+
+.description-text,
+.observacoes-text {
+  color: var(--cor-texto-secundario);
+  line-height: 1.6;
+  padding: 12px;
+  background: #F9F9F9;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.observacoes-text {
+  background: #FFF9E6;
+  border-left: 3px solid #FFC107;
+}
+
 /* Responsivo */
 @media (max-width: 768px) {
   .consultorias-card {
@@ -410,4 +674,26 @@
   .consultorias-table td {
     padding: 10px 8px;
   }
+
+ /* Responsividade */
+@media (max-width: 1200px) {
+  .consultorias-grid-cliente {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .consultoria-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .status-badge-large {
+    justify-content: center;
+  }
+
+  .consultoria-info-grid {
+    grid-template-columns: 1fr;
+  }
+} 
 }

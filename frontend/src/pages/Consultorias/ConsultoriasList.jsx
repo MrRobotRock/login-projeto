@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Search, ChevronDown, Plus, Edit2, CheckCircle, Clock, AlertCircle, ArrowLeft } from "lucide-react";
+import { Search, ChevronDown, Edit2, Clock, AlertCircle, ArrowLeft, CheckCircle, Zap, X as XIcon, FileText, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import { hasPermission } from "../../utils/permissionsHelper";
 import "./ConsultoriasList.css";
 import VincularResponsavelModal from "./VincularResponsavelModal";
 import MudarStatusModal from "./MudarStatusModal";
 
-export default function ConsultoriasList() {
+export default function ConsultoriasList({ userOnly = false }) {
   const navigate = useNavigate();
   const [consultorias, setConsultorias] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,12 +23,14 @@ export default function ConsultoriasList() {
   const [successMessage, setSuccessMessage] = useState("");
   const [showMudarStatusModal, setShowMudarStatusModal] = useState(false);
   const [selectedConsultoriaForStatus, setSelectedConsultoriaForStatus] = useState(null);
+  const [expandedConsultoria, setExpandedConsultoria] = useState(null);
 
   const currentUser = api.auth.getCurrentUser();
+  const canManageConsultorias = hasPermission(currentUser, "consultations:update");
 
   useEffect(() => {
     fetchConsultorias();
-  }, [statusFilter, currentPage, itemsPerPage]);
+  }, [statusFilter, currentPage, itemsPerPage, userOnly]);
 
   const fetchConsultorias = async () => {
     try {
@@ -36,6 +39,7 @@ export default function ConsultoriasList() {
         page: currentPage,
         limit: itemsPerPage,
         ...(statusFilter && { status: statusFilter }),
+        ...(userOnly && { email: currentUser?.email }),
       });
 
       const response = await api.get(`/api/consultorias?${params}`);
@@ -89,16 +93,22 @@ export default function ConsultoriasList() {
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
+  const toggleExpandConsultoria = (id) => {
+    setExpandedConsultoria(expandedConsultoria === id ? null : id);
+  };
+
   const getStatusIcon = (status) => {
     switch (status) {
       case "pendente":
         return <AlertCircle size={18} className="status-icon pendente" />;
-      case "em_atendimento":
-        return <Clock size={18} className="status-icon em-atendimento" />;
+      case "em_analise":
+        return <Zap size={18} className="status-icon em-analise" />;
       case "confirmada":
         return <CheckCircle size={18} className="status-icon confirmada" />;
       case "concluida":
         return <CheckCircle size={18} className="status-icon concluida" />;
+      case "cancelada":
+        return <XIcon size={18} className="status-icon cancelada" />;
       default:
         return null;
     }
@@ -115,9 +125,237 @@ export default function ConsultoriasList() {
     return labels[status] || status;
   };
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("pt-BR");
+  const getStatusDescription = (status) => {
+    const descriptions = {
+      pendente: "Sua solicitação foi recebida e está aguardando análise da equipe.",
+      em_analise: "Nossa equipe está analisando sua solicitação e entrará em contato em breve.",
+      confirmada: "Sua consultoria foi aprovada e será iniciada em breve.",
+      concluida: "Sua consultoria foi concluída. Confira os resultados abaixo.",
+      cancelada: "Esta solicitação foi cancelada.",
+    };
+    return descriptions[status] || "Status da consultoria";
   };
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    });
+  };
+
+  const formatDateTime = (date) => {
+    return new Date(date).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  };
+
+  if (userOnly) {
+    return (
+      <div className="consultorias-container">
+        <div className="consultorias-card">
+          <div className="consultorias-header">
+            <h1>Minhas Consultorias</h1>
+            <p>Acompanhe o status das suas solicitações de consultoria</p>
+          </div>
+
+          <button
+            className="back-button"
+            onClick={() => navigate("/menu")}
+            type="button"
+          >
+            <ArrowLeft size={20} />
+            <span>Voltar</span>
+          </button>
+
+          {successMessage && (
+            <div className="success-message">
+              ✓ {successMessage}
+            </div>
+          )}
+
+          <div className="consultorias-controls">
+            <div className="search-box">
+              <Search size={20} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Buscar por empresa ou descrição..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+              />
+            </div>
+
+            <div className="filters-group">
+              <div className="dropdown-container">
+                <button
+                  className="filter-button"
+                  onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                >
+                  {statusFilter ? getStatusLabel(statusFilter) : "Todos os Status"}
+                  <ChevronDown size={18} />
+                </button>
+                {showStatusDropdown && (
+                  <div className="dropdown-menu">
+                    <button
+                      className={`dropdown-item ${!statusFilter ? "active" : ""}`}
+                      onClick={() => {
+                        setStatusFilter("");
+                        setShowStatusDropdown(false);
+                        setCurrentPage(1);
+                      }}
+                    >
+                      Todos os Status
+                    </button>
+                    {["pendente", "em_analise", "confirmada", "concluida", "cancelada"].map(
+                      (status) => (
+                        <button
+                          key={status}
+                          className={`dropdown-item ${statusFilter === status ? "active" : ""}`}
+                          onClick={() => {
+                            setStatusFilter(status);
+                            setShowStatusDropdown(false);
+                            setCurrentPage(1);
+                          }}
+                        >
+                          {getStatusLabel(status)}
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="loading">Carregando suas consultorias...</div>
+          ) : filteredConsultorias.length === 0 ? (
+            <div className="empty-state">
+              <FileText size={64} className="empty-icon" />
+              <h3>Nenhuma consultoria encontrada</h3>
+              <p>Você ainda não possui solicitações de consultoria.</p>
+              <button 
+                className="btn-primary"
+                onClick={() => navigate("/menu/form-consultoria")}
+              >
+                Solicitar Consultoria
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="consultorias-grid-cliente">
+                {filteredConsultorias.map((consultoria) => (
+                  <div key={consultoria.id} className="consultoria-card-cliente">
+                    <div className="consultoria-card-header">
+                      <div className="consultoria-card-title">
+                        <h3>{consultoria.empresa}</h3>
+                        <span className="consultoria-date">
+                          <Calendar size={14} />
+                          Solicitado em {formatDate(consultoria.criadoEm)}
+                        </span>
+                      </div>
+                      <span className={`status-badge-large ${consultoria.status}`}>
+                        {getStatusIcon(consultoria.status)}
+                        {getStatusLabel(consultoria.status)}
+                      </span>
+                    </div>
+
+                    <div className="consultoria-card-body">
+                      <p className="status-description">
+                        {getStatusDescription(consultoria.status)}
+                      </p>
+
+                      <div className="consultoria-info-grid">
+                        <div className="info-item">
+                          <span className="info-label">Solicitante:</span>
+                          <span className="info-value">{consultoria.nome}</span>
+                        </div>
+                        <div className="info-item">
+                          <span className="info-label">Email:</span>
+                          <span className="info-value">{consultoria.email}</span>
+                        </div>
+                        <div className="info-item">
+                          <span className="info-label">Telefone:</span>
+                          <span className="info-value">{consultoria.telefone}</span>
+                        </div>
+                        {consultoria.responsavel && (
+                          <div className="info-item">
+                            <span className="info-label">Responsável:</span>
+                            <span className="info-value">{consultoria.responsavel.nome}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        className="btn-expand"
+                        onClick={() => toggleExpandConsultoria(consultoria.id)}
+                      >
+                        {expandedConsultoria === consultoria.id ? "Ver menos" : "Ver detalhes"}
+                        <ChevronDown 
+                          size={16} 
+                          className={expandedConsultoria === consultoria.id ? "rotated" : ""}
+                        />
+                      </button>
+
+                      {expandedConsultoria === consultoria.id && (
+                        <div className="consultoria-details">
+                          <h4>Descrição da Solicitação:</h4>
+                          <p className="description-text">{consultoria.descricao}</p>
+                          
+                          {consultoria.observacoes && (
+                            <>
+                              <h4>Observações da Equipe:</h4>
+                              <p className="observacoes-text">{consultoria.observacoes}</p>
+                            </>
+                          )}
+
+                          {consultoria.dataAtendimento && (
+                            <div className="info-item">
+                              <span className="info-label">Data de Atendimento:</span>
+                              <span className="info-value">
+                                {formatDateTime(consultoria.dataAtendimento)}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <button
+                    className="pagination-button"
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Anterior
+                  </button>
+                  <span className="pagination-info">
+                    Página {currentPage} de {totalPages}
+                  </span>
+                  <button
+                    className="pagination-button"
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Próximo
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="consultorias-container">
@@ -299,26 +537,27 @@ export default function ConsultoriasList() {
               </table>
             </div>
 
-            {/* Paginação */}
-            <div className="pagination">
-              <button
-                className="pagination-button"
-                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
-                Anterior
-              </button>
-              <span className="pagination-info">
-                Página {currentPage} de {totalPages}
-              </span>
-              <button
-                className="pagination-button"
-                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-              >
-                Próximo
-              </button>
-            </div>
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  className="pagination-button"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </button>
+                <span className="pagination-info">
+                  Página {currentPage} de {totalPages}
+                </span>
+                <button
+                  className="pagination-button"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Próximo
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>

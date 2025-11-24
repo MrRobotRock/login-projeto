@@ -4,7 +4,6 @@
   box-sizing: border-box;
 }
 
-
 :root {
     --cor-gradiente-fundo: linear-gradient(135deg, #E4F0E1 0%, #A3C69D 100%);
     --cor-fundo-card: #F7FDF4;
@@ -21,8 +20,6 @@
     --cor-erro-borda: #FECACA;
     --cor-erro-texto: #DC2626;
 }
-
-
 
 html, body {
   width: 100%;

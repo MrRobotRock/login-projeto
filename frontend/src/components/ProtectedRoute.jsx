@@ -1,33 +1,28 @@
-import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import api from "../services/api";
+import { hasPermission, isAdmin } from "../utils/permissionsHelper";
 
-const ProtectedRoute = ({ children, requiredPermission }) => {
+export default function ProtectedRoute({ children, requiredPermission }) {
   const isAuthenticated = api.auth.isAuthenticated();
   const user = api.auth.getCurrentUser();
-  const location = useLocation();
 
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
-
   if (requiredPermission) {
-    const roles = user.roles || [];
-    const isAdmin = roles.some(r => {
-        const roleName = (typeof r === 'string' ? r : r.nome) || "";
-        return roleName.toUpperCase() === "ADMIN" || roleName === "Administrador";
-    });
-    
-    const userPermissions = user.permissions || [];
-    const hasPermission = userPermissions.includes(requiredPermission);
+    if (isAdmin(user)) {
+      return children;
+    }
 
-    if (!isAdmin && !hasPermission) {
-      console.warn(`Acesso negado. Usuário: ${user.email}`);
+    if (!hasPermission(user, requiredPermission)) {
+      console.warn(`Usuário ${user?.email} tentou acessar uma rota sem permissão: ${requiredPermission}`);
+      setTimeout(() => {
+        alert("Você não tem permissão para acessar esta página.");
+      }, 100);
+      
       return <Navigate to="/menu" replace />;
     }
   }
 
   return children;
-};
-
-export default ProtectedRoute;
+}

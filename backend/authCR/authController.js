@@ -7,9 +7,8 @@ const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
 
-// Configuração do transporter
+// Configuração do transporter para Gmail
 const getEmailTransporter = () => {
-  const emailService = process.env.EMAIL_SERVICE || "gmail";
   const emailUser = process.env.EMAIL_USER;
   const emailPassword = process.env.EMAIL_PASSWORD;
 
@@ -17,47 +16,25 @@ const getEmailTransporter = () => {
     throw new Error("EMAIL_USER e EMAIL_PASSWORD não configurados no .env");
   }
 
-  // Configurações para diferentes provedores
-  const config = {
-    gmail: {
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: emailUser,
-        pass: emailPassword.trim()
-      }
-    },
-    outlook: {
-      host: "smtp-mail.outlook.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: emailUser,
-        pass: emailPassword.trim()
-      }
-    },
-    office365: {
-      host: "smtp.office365.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: emailUser,
-        pass: emailPassword.trim()
-      }
-    },
-    yahoo: {
-      host: "smtp.mail.yahoo.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: emailUser,
-        pass: emailPassword.trim()
-      }
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: emailUser,
+      pass: emailPassword.replace(/\s/g, '') 
     }
-  };
+  });
+};
 
-  return nodemailer.createTransport(config[emailService] || config.gmail);
+const testEmailConnection = async () => {
+  try {
+    const transporter = getEmailTransporter();
+    await transporter.verify();
+    console.log("✅ Conexão com Gmail estabelecida com sucesso!");
+    return true;
+  } catch (error) {
+    console.error("❌ Erro ao conectar com Gmail:", error.message);
+    return false;
+  }
 };
 
 // Sistema de registrar uma conta de usuário
@@ -200,7 +177,6 @@ exports.forgotPassword = async (req, res) => {
     }
 
     const codigoRecuperacao = gerarSenhaAleatoria(6);
-
     const hashCodigo = await bcrypt.hash(codigoRecuperacao, 10);
 
     const data_expiracao = new Date();
@@ -228,26 +204,41 @@ exports.forgotPassword = async (req, res) => {
 
     try {
       const transporter = getEmailTransporter();
-      await transporter.sendMail({
-        from: `"${process.env.EMAIL_FROM_NAME || 'Empresa'}" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "Recuperação de senha",
-        html: htmlTemplate,
-      });
       
-      console.log(`✅ Email enviado para ${email} com código: ${codigoRecuperacao}`);
+      const mailOptions = {
+        from: `"${process.env.EMAIL_FROM_NAME || 'CENANOINK'}" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "Recuperação de senha - CENANOINK",
+        html: htmlTemplate,
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      
+      console.log("✅ Email enviado com sucesso!");
+      console.log(`   Para: ${email}`);
+      console.log(`   Message ID: ${info.messageId}`);
+      console.log(`   Código: ${codigoRecuperacao}`);
+      
     } catch (emailError) {
       console.error("❌ Erro ao enviar email:", emailError);
+      
+      let errorMessage = "Erro ao enviar email.";
+      
+      if (emailError.code === 'EAUTH') {
+        errorMessage = "Erro de autenticação. Verifique se você está usando uma Senha de App do Google (não a senha normal).";
+      } else if (emailError.code === 'ESOCKET') {
+        errorMessage = "Erro de conexão. Verifique sua conexão com a internet.";
+      } else if (emailError.responseCode === 535) {
+        errorMessage = "Credenciais inválidas. Use uma Senha de App do Google: https://myaccount.google.com/apppasswords";
+      }
+      
       return res.status(500).json({ 
-        error: "Erro ao enviar email. Verifique as credenciais no .env" 
+        error: errorMessage,
+        details: emailError.message
       });
     }
 
-    return res.json({
-      message: "Código de recuperação enviado para seu email.",
-      codigoRecuperacao, 
-      expiraEm: data_expiracao,
-    });
+    
 
   } catch (error) {
     console.error("ERRO NO FORGOT PASSWORD:", error);
@@ -263,7 +254,6 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ error: "Parâmetros obrigatórios: email, codigoRecuperacao, novaSenha." });
     }
 
-    // Buscar o registro de recuperação não utilizado e que não expirou
     const registro = await prisma.passwordReset.findFirst({
       where: {
         email,
@@ -312,6 +302,8 @@ function gerarSenhaAleatoria(tamanho) {
   }
   return senha;
 }
+
+testEmailConnection();
 
 process.on("beforeExit", async () => {
   await prisma.$disconnect();
