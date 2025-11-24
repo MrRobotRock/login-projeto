@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import api from "../../services/api";  
 
 function Navbar() {
   const [hidden, setHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
 
+  const user = api.auth.getCurrentUser();  
+
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > lastScrollY) {
-        setHidden(true);
-      } else {
-        setHidden(false);
-      }
+      setHidden(window.scrollY > lastScrollY);
       setLastScrollY(window.scrollY);
     };
 
@@ -47,12 +46,21 @@ function Navbar() {
       </div>
 
       <div className="navbar_right">
-        <button
-          className="navbar_button"
-          onClick={() => navigate("/login")}
-        >
-          Login/Cadastro
-        </button>
+        {user ? (
+          <button
+            className="navbar_button"
+            onClick={() => navigate("/menu")}
+          >
+            Voltar ao Menu
+          </button>
+        ) : (
+          <button
+            className="navbar_button"
+            onClick={() => navigate("/login")}
+          >
+            Login/Cadastro
+          </button>
+        )}
       </div>
     </nav>
   );
