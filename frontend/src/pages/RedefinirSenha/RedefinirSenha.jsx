@@ -1,45 +1,57 @@
 import { useState } from "react";
-import { User, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import api from "../../services/api";
 import "./RedefinirSenha.css";
 
 export default function RedefinirSenha() {
   const navigate = useNavigate();
-  const [novaSenha, setNovaSenha] = useState({
-    novaSenha: "",
-  });
-
-  const [confirmarSenha, setConfirmarSenha] = useState({
-    confirmarSenha: "",
-  });
-
+  const location = useLocation();
+  const email = location.state?.email || "";
+  const codigo = location.state?.codigo || "";
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  // const [success, setSuccess] = useState("");
-  // const [error, setError] = useState("");
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setError("");
-    // setSuccess("");
+    setErro("");
+    setSucesso("");
 
-    // if (novaSenha !== confirmarSenha) {
-    //   setError("As senhas não conferem!");
-    //   return;
-    // }
+    if (novaSenha !== confirmarSenha) {
+      setErro("As senhas não conferem!");
+      return;
+    }
+
+    if (!email || !codigo) {
+      setErro("Dados de recuperação ausentes. Inicie o processo novamente.");
+      return;
+    }
 
     setLoading(true);
-  };
-  const handleChange = (e) => {
-    setNovaSenha({
-      ...novaSenha,
-      [e.target.name]: e.target.value,
-    });
-    setConfirmarSenha({
-      ...confirmarSenha,
-      [e.target.name]: e.target.value,
-    });
+
+    try {
+      const response = await api.post('/api/reset-password', {
+        email,
+        codigoRecuperacao: codigo,
+        novaSenha,
+      });
+
+      setSucesso(response.data?.message || 'Senha redefinida com sucesso!');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || err.message || 'Erro ao redefinir senha.';
+      setErro(errorMessage);
+      console.error('Erro reset senha:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,31 +59,32 @@ export default function RedefinirSenha() {
       <div className="rs-card">
         <button
           className="back-button"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login")}
           type="button"
         >
           <ArrowLeft size={20} />
           <span>Voltar</span>
         </button>
+
         <div className="rs-header">
           <h2>Redefina sua senha</h2>
           <p>Elabore sua nova senha</p>
         </div>
 
-        {/* {error && <p className="erro">{error}</p>}
-        {success && <div className="success-message">{success}</div>} */}
+        {erro && <p className="erro">{erro}</p>}
+        {sucesso && <p className="success-message">{sucesso}</p>}
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="senha">Nova Senha</label>
+            <label htmlFor="novaSenha">Nova Senha</label>
             <div className="input-wrapper">
               <Lock className="input-icon" size={20} />
               <input
                 type={showPassword ? "text" : "password"}
                 id="novaSenha"
                 name="novaSenha"
-                value={novaSenha.senha}
-                onChange={handleChange}
+                value={novaSenha}
+                onChange={(e) => setNovaSenha(e.target.value)}
                 placeholder="••••••••"
                 required
               />
@@ -83,24 +96,25 @@ export default function RedefinirSenha() {
               </span>
             </div>
           </div>
-          {/* confirmarSenha */}
 
           <div className="form-group">
-            <label htmlFor="confirmar-senha">Confirmar Senha</label>
+            <label htmlFor="confirmarSenha">Confirmar Senha</label>
             <div className="input-wrapper">
               <Lock className="input-icon" size={20} />
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirmarSenha"
                 name="confirmarSenha"
-                value={confirmarSenha.senha}
-                onChange={handleChange}
+                value={confirmarSenha}
+                onChange={(e) => setConfirmarSenha(e.target.value)}
                 placeholder="••••••••"
                 required
               />
               <span
                 className="toggle-password"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </span>

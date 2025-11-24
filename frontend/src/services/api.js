@@ -12,7 +12,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptador de respostas: trata erros de autenticação
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -25,7 +24,6 @@ api.interceptors.response.use(
 
 // Métodos de autenticação e gerenciamento de usuário
 api.auth = {
-  // Login: faz a requisição e salva o token
   async login(email, senha) {
     try {
       const response = await api.post('/api/login', { email, senha });
@@ -44,7 +42,7 @@ api.auth = {
     }
   },
 
-  // Logout: limpa dados e redireciona
+  // limpa dados e redireciona
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

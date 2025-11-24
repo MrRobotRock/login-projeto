@@ -15,17 +15,27 @@ export default function RecuperarSenha() {
     setLoading(true);
 
     try {
-      // await recuperarSenhaService.enviarCodigo(email);
-      
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Código enviado para:', email);
-    
+      const response = await fetch('http://localhost:3000/api/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+
+        throw new Error(data.error || 'Algo deu errado');
+      }
+
       navigate('/verificar-codigo', { state: { email } });
-      
+
     } catch (err) {
       setError(err.message || 'Erro ao enviar código. Tente novamente.');
     } finally {
+
       setLoading(false);
     }
   };
@@ -33,7 +43,7 @@ export default function RecuperarSenha() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <button 
+        <button
           className="back-button"
           onClick={() => navigate('/login')}
           type="button"

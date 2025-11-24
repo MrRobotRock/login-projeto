@@ -15,6 +15,7 @@ export default function ConfiguracaoAdmin() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showPerPageDropdown, setShowPerPageDropdown] = useState(false);
   const [expandedUserId, setExpandedUserId] = useState(null);
+  const [originalUserData, setOriginalUserData] = useState({});
 
   async function fetchUsers() {
     try {
@@ -32,6 +33,7 @@ export default function ConfiguracaoAdmin() {
       );
     } catch (err) {
       console.error("Erro ao buscar usuários:", err);
+      alert("Erro ao carregar usuários. Verifique o console.");
     } finally {
       setLoading(false);
     }
@@ -41,7 +43,6 @@ export default function ConfiguracaoAdmin() {
     let mounted = true;
     if (mounted) {
       fetchUsers();
-      // buscar roles do backend
       api
         .get("/users/roles")
         .then((res) => setAvailableRoles(res.data || []))
@@ -52,15 +53,39 @@ export default function ConfiguracaoAdmin() {
     };
   }, []);
 
+  // Salva o estado original quando expande
+  const handleExpandUser = (userId) => {
+    if (expandedUserId === userId) {
+      setExpandedUserId(null);
+    } else {
+      const user = users.find(u => u.id === userId);
+      setOriginalUserData({
+        [userId]: {
+          status: user.status,
+          roles: [...user.roles]
+        }
+      });
+      setExpandedUserId(userId);
+    }
+  };
+
   // Salva alterações do usuário
   const saveUser = async (userId) => {
     const user = users.find((u) => u.id === userId);
     if (!user) return;
+
     try {
       setSavingUserId(userId);
-      await api.put(`/users/${userId}`, { status: user.status });
+      
+      await api.put(`/users/${userId}`, { 
+        status: user.status,
+        roles: user.roles
+      });
+      
       await fetchUsers();
       setExpandedUserId(null);
+      setOriginalUserData({});
+      alert("Usuário atualizado com sucesso!");
     } catch (err) {
       console.error("Erro salvando usuário:", err);
       alert("Erro ao salvar alterações. Verifique o console.");
@@ -69,9 +94,16 @@ export default function ConfiguracaoAdmin() {
     }
   };
 
-  const cancelEdit = async (userId) => {
-    await fetchUsers();
+  const cancelEdit = (userId) => {
+    if (originalUserData[userId]) {
+      setUsers(prev => prev.map(u => 
+        u.id === userId 
+          ? { ...u, ...originalUserData[userId] }
+          : u
+      ));
+    }
     setExpandedUserId(null);
+    setOriginalUserData({});
   };
 
   // Busca global
@@ -124,6 +156,16 @@ export default function ConfiguracaoAdmin() {
     return availableRoles.find((r) => r.id === roleId)?.nome || "";
   };
 
+  if (loading) {
+    return (
+      <div className="config-admin-container">
+        <div className="config-admin-card">
+          <p style={{ textAlign: "center", padding: "40px" }}>Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="config-admin-container">
       <div className="config-admin-card">
@@ -140,7 +182,6 @@ export default function ConfiguracaoAdmin() {
           <span>Voltar</span>
         </button>
 
-        <div className="config-controls"></div>
         <div className="config-controls">
           <div className="search-box">
             <Search size={20} className="search-icon" />
@@ -208,7 +249,6 @@ export default function ConfiguracaoAdmin() {
           )}
         </div>
 
-        {/* Tabela de usuários */}
         <div className="users-table-container">
           <table className="users-table">
             <thead>
@@ -232,7 +272,7 @@ export default function ConfiguracaoAdmin() {
                 paginatedUsers.map((user) => (
                   <React.Fragment key={user.id}>
                     <tr>
-                      <td>{user.id}</td>
+                      <td>{user.id.substring(0, 8)}...</td>
                       <td className="user-name">{user.nome}</td>
                       <td>{user.usuario}</td>
                       <td>{user.email}</td>
@@ -242,6 +282,7 @@ export default function ConfiguracaoAdmin() {
                             user.status ? "active" : "inactive"
                           }`}
                           onClick={() => toggleUserStatus(user.id)}
+                          disabled={expandedUserId === user.id}
                         >
                           {user.status ? "Ativo" : "Inativo"}
                         </button>
@@ -249,11 +290,7 @@ export default function ConfiguracaoAdmin() {
                       <td>
                         <button
                           className="permissions-button"
-                          onClick={() =>
-                            setExpandedUserId(
-                              expandedUserId === user.id ? null : user.id
-                            )
-                          }
+                          onClick={() => handleExpandUser(user.id)}
                         >
                           {user.roles.length > 0
                             ? user.roles.map((r) => getRoleName(r)).join(", ")
@@ -298,7 +335,7 @@ export default function ConfiguracaoAdmin() {
                               >
                                 {savingUserId === user.id
                                   ? "Salvando..."
-                                  : "Salvar"}
+                                  : "Salvar Alterações"}
                               </button>
                               <button
                                 className="cancel-button"
@@ -319,7 +356,6 @@ export default function ConfiguracaoAdmin() {
           </table>
         </div>
 
-        {/* Paginação */}
         {totalPages > 1 && (
           <div className="pagination">
             <button

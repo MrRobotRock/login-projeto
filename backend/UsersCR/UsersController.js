@@ -84,15 +84,52 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// ROTA 4: Atualizar usuário
+// ROTA 4: Atualizar usuário (incluindo roles)
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
+  const { status, roles } = req.body;
+
   try {
+    // Atualiza o status do usuário
     const updatedUser = await prisma.user.update({
       where: { id: id },
-      data: req.body,
+      data: { status },
     });
-    res.json(updatedUser);
+
+    if (roles !== undefined && Array.isArray(roles)) {
+      await prisma.userRole.deleteMany({
+        where: { userId: id },
+      });
+
+      // Adiciona as novas roles
+      if (roles.length > 0) {
+        await prisma.userRole.createMany({
+          data: roles.map((roleId) => ({
+            userId: id,
+            roleId: roleId,
+          })),
+        });
+      }
+    }
+
+    // Busca o usuário atualizado com as roles
+    const userWithRoles = await prisma.user.findUnique({
+      where: { id: id },
+      include: {
+        userRoles: {
+          include: { role: true },
+        },
+      },
+    });
+
+    res.json({
+      id: userWithRoles.id,
+      nome: userWithRoles.nome,
+      usuario: userWithRoles.usuario,
+      email: userWithRoles.email,
+      status: userWithRoles.status,
+      roles: userWithRoles.userRoles.map((ur) => ur.roleId),
+    });
   } catch (error) {
     console.error("Erro ao atualizar usuário:", error);
     res.status(500).json({ error: "Erro ao atualizar usuário." });
@@ -108,17 +145,5 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     console.error("Erro ao deletar usuário:", error);
     res.status(500).json({ error: "Erro ao deletar usuário." });
-  }
-};
-
-// ROTA 6: Listar todas as roles disponíveis
-exports.getRoles = async (req, res) => {
-  try {
-    const roles = await prisma.role.findMany();
-    // retornar id e nome
-    res.json(roles.map(r => ({ id: r.id, nome: r.nome })));
-  } catch (error) {
-    console.error('Erro ao buscar roles:', error);
-    res.status(500).json({ error: 'Erro ao buscar roles.' });
   }
 };
