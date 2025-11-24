@@ -85,7 +85,7 @@ const validateQueryParams = (req, res, next) => {
   }
 
   // Validar status
-  const validStatuses = ['pendente', 'em_analise', 'aprovada', 'rejeitada', 'concluida'];
+  const validStatuses = ['pendente', 'em_analise', 'em_atendimento', 'confirmada', 'concluida', 'cancelada'];
   if (status && !validStatuses.includes(status)) {
     return res.status(400).json({
       success: false,

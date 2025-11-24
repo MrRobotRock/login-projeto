@@ -45,9 +45,7 @@ function App() {
           }
         />
 
-        {/* --- ROTAS PROTEGIDAS --- */}
         
-        {/* Menu: Acesso básico para qualquer logado */}
         <Route
           path="/menu"
           element={
@@ -57,7 +55,6 @@ function App() {
           }
         />
 
-        {/* Consultoria: Requer permissão 'consultations:create' */}
         <Route 
           path="/menu/form-consultoria" 
           element={
@@ -67,7 +64,6 @@ function App() {
           } 
         />
 
-        {/* Config Admin: Requer permissão 'users:view_all' (ou ser ADMIN) */}
         <Route 
           path="/menu/config-admin" 
           element={
@@ -77,7 +73,6 @@ function App() {
           } 
         />
 
-        {/* --- FIM ROTAS PROTEGIDAS --- */}
 
         <Route path="*" element={<Navigate to="/login" replace />} />
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
