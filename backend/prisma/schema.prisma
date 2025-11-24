@@ -8,17 +8,17 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(cuid())
-  nome       String
-  usuario    String   @unique
-  email      String   @unique
-  senha      String
-  status     Boolean  @default(true)
-  criadoEm   DateTime @default(now()) @map("criado_em")
-  alteradoEm DateTime @updatedAt @map("alterado_em")
-
-  userRoles      UserRole[]
+  id             String          @id @default(cuid())
+  nome           String
+  usuario        String          @unique
+  email          String          @unique
+  senha          String
+  criadoEm       DateTime        @default(now()) @map("criado_em")
+  alteradoEm     DateTime        @updatedAt @map("alterado_em")
+  status         Boolean         @default(true)
+  consultorias   Consultoria[]
   passwordResets PasswordReset[]
+  userRoles      UserRole[]
 
   @@index([email])
   @@index([usuario])
@@ -29,21 +29,25 @@ model User {
 model Role {
   id        Int        @id @default(autoincrement())
   nome      String     @unique
-  userRoles UserRole[]
+  description String   @default("")
+  
+  permissions String[]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  
+  userRoles   UserRole[]
 
   @@map("roles")
 }
 
 model UserRole {
-  id Int @id @default(autoincrement())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  roleId Int
-
+  id       Int      @id @default(autoincrement())
+  userId   String
+  roleId   Int
   criadoEm DateTime @default(now()) @map("criado_em")
+  role     Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, roleId])
   @@map("usuarioxrole")
@@ -56,9 +60,8 @@ model PasswordReset {
   dataExpiracao  DateTime @map("data_expiracao")
   utilizado      Boolean  @default(false)
   criadoEm       DateTime @default(now()) @map("criado_em")
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @map("user_id")
+  userId         String   @map("user_id")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([email])
   @@index([senhaAleatoria])
@@ -67,21 +70,21 @@ model PasswordReset {
 }
 
 model Consultoria {
-  id             String   @id @default(cuid())
-  nome           String
-  email          String
-  telefone       String
-  empresa        String
-  descricao      String   @db.Text
-  consentimento  Boolean  @default(true)
-  status         String   @default("pendente") 
-  criadoEm       DateTime @default(now()) @map("criado_em")
-  alteradoEm     DateTime @updatedAt @map("alterado_em")
-  
-  responsavel    String?
-  observacoes    String?  @db.Text
+  id              String    @id @default(cuid())
+  nome            String
+  email           String
+  telefone        String
+  empresa         String
+  descricao       String
+  consentimento   Boolean   @default(true)
+  status          String    @default("pendente")
+  criadoEm        DateTime  @default(now()) @map("criado_em")
+  alteradoEm      DateTime  @updatedAt @map("alterado_em")
+  observacoes     String?
   dataAtendimento DateTime? @map("data_atendimento")
-  
+  responsavelId   String?   @map("responsavel_id")
+  responsavel     User?     @relation(fields: [responsavelId], references: [id])
+
   @@index([email])
   @@index([status])
   @@index([criadoEm])

@@ -115,7 +115,6 @@ exports.deleteUser = async (req, res) => {
 exports.getRoles = async (req, res) => {
   try {
     const roles = await prisma.role.findMany();
-    // retornar id e nome
     res.json(roles.map(r => ({ id: r.id, nome: r.nome })));
   } catch (error) {
     console.error('Erro ao buscar roles:', error);

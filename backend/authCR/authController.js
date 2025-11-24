@@ -49,7 +49,6 @@ exports.register = async (req, res) => {
       },
     });
 
-    // ✅ CORRIGIDO: Criar o token que estava faltando
     const token = jwt.sign(
       {
         id: novoUsuario.id,
