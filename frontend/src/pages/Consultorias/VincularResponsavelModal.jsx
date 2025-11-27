@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, User } from "lucide-react";
+import { X, User, Search } from "lucide-react";
 import api from "../../services/api";
 import "./VincularResponsavelModal.css";
 
@@ -14,6 +14,7 @@ export default function VincularResponsavelModal({
   const [selectedResponsavel, setSelectedResponsavel] = useState(
     consultoria.responsavel?.id || null
   );
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -23,7 +24,13 @@ export default function VincularResponsavelModal({
     try {
       setLoading(true);
       const response = await api.get("/users");
-      setUsers(response.data || []);
+      // Filtrar apenas Administrador e PESQUISADOR
+      const filteredUsers = (response.data || []).filter((user) => {
+        const roles = user.userRoles?.map((ur) => ur.role?.nome) || [];
+        return roles.includes("Administrador") || roles.includes("PESQUISADOR");
+      });
+      console.log("Usuários filtrados:", filteredUsers);
+      setUsers(filteredUsers);
     } catch (error) {
       console.error("Erro ao buscar usuários:", error);
     } finally {
@@ -40,6 +47,11 @@ export default function VincularResponsavelModal({
   const handleRemoverResponsavel = async () => {
     await onVincular(null);
   };
+
+  // Filtrar usuários pela busca
+  const filteredUsers = users.filter((user) =>
+    user.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -70,6 +82,18 @@ export default function VincularResponsavelModal({
           <div className="responsavel-selection">
             <h4>Selecione um responsável:</h4>
 
+            {/* Campo de busca */}
+            <div className="search-box">
+              <Search size={20} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Pesquisar por nome..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+            </div>
+
             {/* Botão de atribuir a si mesmo */}
             <div
               className={`responsavel-option self-assign ${
@@ -92,7 +116,7 @@ export default function VincularResponsavelModal({
               </div>
             </div>
 
-            {users.length > 0 && (
+            {filteredUsers.length > 0 && (
               <>
                 <div className="separator">Outros usuários</div>
 
@@ -100,7 +124,7 @@ export default function VincularResponsavelModal({
                   <div className="loading-users">Carregando usuários...</div>
                 ) : (
                   <div className="users-list">
-                    {users
+                    {filteredUsers
                       .filter((u) => u.id !== currentUser?.id)
                       .map((user) => (
                         <div

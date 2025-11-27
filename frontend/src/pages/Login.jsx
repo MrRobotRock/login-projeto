@@ -87,10 +87,7 @@ export default function Login() {
           </div>
 
           <div className="form-footer">
-            <label className="remember-me">
-              <input type="checkbox" />
-              <span>Lembrar de mim</span>
-            </label>
+            
             <a 
   href="#" 
   className="forgot-password"

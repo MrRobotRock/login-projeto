@@ -3,7 +3,6 @@ export const hasPermission = (user, permission) => {
     return false;
   }
 
-  // Mapeia as permissões por role
   const rolePermissions = {
     1: [ // Administrador 
       "users:create", "users:edit", "users:delete", "users:view_all",

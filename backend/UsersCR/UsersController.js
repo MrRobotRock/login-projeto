@@ -33,7 +33,7 @@ exports.getUsers = async (req, res) => {
       status: u.status,
       criadoEm: u.criadoEm,
       alteradoEm: u.alteradoEm,
-      roles: (u.userRoles || []).map((ur) => ur.roleId),
+      userRoles: u.userRoles || [],
     }));
 
     res.json(mapped);
@@ -84,7 +84,7 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// ROTA 4: Atualizar usuário (incluindo roles)
+// ROTA 4: Atualizar usuário 
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
   const { status, roles } = req.body;

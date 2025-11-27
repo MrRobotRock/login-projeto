@@ -63,13 +63,33 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const senhaHash = await bcrypt.hash(senha, salt);
 
+    let roleCliente = await prisma.role.findFirst({
+      where: { 
+        nome: {
+          equals: "CLIENTE",
+          mode: 'insensitive' 
+        }
+      }
+    });
+
+    // Cria o usuário E já adiciona a role de cliente
     const novoUsuario = await prisma.user.create({
       data: {
         nome,
         usuario,
         email,
         senha: senhaHash,
+        userRoles: {
+          create: {
+            roleId: roleCliente.id
+          }
+        }
       },
+      include: {
+        userRoles: {
+          include: { role: true }
+        }
+      }
     });
 
     const token = jwt.sign(
@@ -82,6 +102,12 @@ exports.register = async (req, res) => {
       { expiresIn: "24h" }
     );
 
+    console.log("✅ Usuário criado com sucesso:", {
+      id: novoUsuario.id,
+      email: novoUsuario.email,
+      roles: novoUsuario.userRoles.map(ur => ur.role.nome)
+    });
+
     res.status(201).json({
       message: "Usuário criado com sucesso!",
       token,
@@ -91,11 +117,14 @@ exports.register = async (req, res) => {
         usuario: novoUsuario.usuario,
         email: novoUsuario.email,
         status: novoUsuario.status,
-        roles: []
+        roles: novoUsuario.userRoles.map(ur => ({
+          id: ur.role.id,
+          nome: ur.role.nome
+        }))
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error("ERRO NO REGISTER:", error);
     res.status(500).json({ error: "Erro interno ao criar o usuário" });
   }
 };
@@ -219,6 +248,10 @@ exports.forgotPassword = async (req, res) => {
       console.log(`   Message ID: ${info.messageId}`);
       console.log(`   Código: ${codigoRecuperacao}`);
       
+      return res.status(200).json({ 
+        message: "Código enviado para seu e-mail com sucesso!" 
+      });
+      
     } catch (emailError) {
       console.error("❌ Erro ao enviar email:", emailError);
       
@@ -237,8 +270,6 @@ exports.forgotPassword = async (req, res) => {
         details: emailError.message
       });
     }
-
-    
 
   } catch (error) {
     console.error("ERRO NO FORGOT PASSWORD:", error);
